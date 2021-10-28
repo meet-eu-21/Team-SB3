@@ -6,3 +6,7 @@ Topic B : Chromosome compartments
 
 Lien du drive : https://drive.google.com/drive/folders/12_6qAuiqADGlbR-buERvZrtDecN3tsoy
 
+Nos data : http://www.lcqb.upmc.fr/meetu/dataforstudent/
+
+
+
