@@ -11,11 +11,11 @@ import seaborn as sns
 from sklearn.manifold import MDS #If you want the scikit learn mds
 import HiCtoolbox
 
-R=100000
+R=25000
 NbmaxEpi=15 #Epi states go from 0 to 15
 alpha=0.227
 selectedmark=1 #index of the selected mark
-HiCfilename='chr1_100kb.RAWobserved' # matrix containing the contact Hi-C
+HiCfilename='chr2_25kb.RAWobserved' # matrix containing the contact Hi-C
 EpiGfilename='E116_15_coreMarks_dense.txt' #EpiGenetic file associating to each bin an epigenetic type
 
 #Build matrix
@@ -35,11 +35,17 @@ print('Input at the good resolution : ',np.shape(binned_map))
 
 filtered_mat = HiCtoolbox.filteramat(binned_map)[0]
 
+print('Input at the good resolution : ',np.shape(filtered_mat))
+
+
 
 
 ## Apply the SCN to the matrix
 
 binned_map_scn = HiCtoolbox.SCN(filtered_mat)
+
+print('Input at the good resolution : ',np.shape(binned_map_scn))
+
 
 ## Let us see a heatmap corresponding to the SCN binned_map :
 
@@ -53,7 +59,7 @@ hm_scn = sns.heatmap(
 )
 
 fig = hm_scn.get_figure()
-fig.savefig('scn_heatmap.png',dpi = 400)
+fig.savefig('scn_heatmap_2.png',dpi = 400)
 
 plt.close()
 
@@ -79,7 +85,7 @@ hm_oe = sns.heatmap(
 
 
 fig = hm_oe.get_figure()
-fig.savefig('oe_heatmap.png',dpi = 400)
+fig.savefig('oe_heatmap_2.png',dpi = 400)
 
 plt.close()
 
@@ -95,7 +101,7 @@ hm_corr = sns.heatmap(
 )  
 
 fig = hm_corr.get_figure()
-fig.savefig('correlation_heatmap.png',dpi = 400)
+fig.savefig('correlation_heatmap_2.png',dpi = 400)
 
 plt.close()
 
