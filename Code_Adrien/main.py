@@ -14,12 +14,11 @@ import pandas as pd
 from sklearn.manifold import MDS #If you want the scikit learn mds
 import HiCtoolbox
 
-os.chdir("D:/Utilisateurs/Adrien/Documents/GitHub/Team-SB3")
 R=100000
 NbmaxEpi=15 #Epi states go from 0 to 15
 alpha=0.227
 selectedmark=1 #index of the selected mark
-HiCfilename='chr16_100kb_test.RAWobserved' # matrix containing the contact Hi-C
+HiCfilename='chr16_100kb.RAWobserved' # matrix containing the contact Hi-C
 EpiGfilename='E116_15_coreMarks_dense.txt' #EpiGenetic file associating to each bin an epigenetic type
 
 #Build matrix
@@ -60,7 +59,7 @@ binsaved=np.where(np.logical_and(mini < sumHicmat,sumHicmat < maxi)) #coord of b
 filtered_map=binned_map[binsaved[1],:] #save on raw
 filtered_map=filtered_map[:,binsaved[1]] #save on col
 
-print("after filtering : ",np.shape(filtered_map))#,np.shape(color_vecseg))
+print("after filtering : ",np.shape(filtered_map))#,np.shape(color_vecseg))
 
 color2=color_bins[binsaved[1]] #filter the epi by removed bin in HiC
 color2=color2[:,selectedmark] #now color2 is 1D
