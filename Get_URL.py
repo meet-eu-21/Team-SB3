@@ -80,5 +80,3 @@ a = approfondissement_url(url)
 # In[9]:
 
 
-print(a)
-
