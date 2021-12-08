@@ -3,10 +3,10 @@
 
 # In[1]:
 
-
+import wget
 import requests
 from bs4 import BeautifulSoup, NavigableString 
-
+from pathlib import Path
 
 # In[2]:
 
@@ -79,4 +79,9 @@ a = approfondissement_url(url)
 
 # In[9]:
 
-
+for file in a :
+    path = str(file)
+    path = path.replace("http://www.lcqb.upmc.fr/meetu/dataforstudent/HiC/","data/") ## change the data
+    Path(path).mkdir(parents=True, exist_ok=True) ### Create a nested folder with all the data
+    wget.download(file,path)
+    
