@@ -12,6 +12,10 @@ from sklearn.manifold import MDS #If you want the scikit learn mds
 import HiCtoolbox
 
 
+
+    
+#========================================= Simulation function ======================================
+
 def pipeline(R,HiCfile,EpiGfile) :
 
     R=25000
@@ -33,11 +37,10 @@ def pipeline(R,HiCfile,EpiGfile) :
     binned_map=HiCtoolbox.bin2d(A,R,R) #!become csr sparse array
     LENTEST=np.shape(A)[0]
     print('Input at the good resolution : ',np.shape(binned_map))
-    
+        
     ##Filter the matrix
     
     filtered_mat = HiCtoolbox.filteramat(binned_map)[0]
-    
     print('Input at the good resolution : ',np.shape(filtered_mat))
     
     
@@ -61,7 +64,7 @@ def pipeline(R,HiCfile,EpiGfile) :
         norm = LogNorm()
     )
     
-    heatmap = HiCfile.replace(".RAWobserved","heatmap.png")
+    heatmap = HiCfile.replace(".RAWobserved","_heatmap.png")
     fig = hm_scn.get_figure()
     fig.savefig(heatmap,dpi = 400)
     
@@ -77,7 +80,7 @@ def pipeline(R,HiCfile,EpiGfile) :
         for j in range(n) :
             oe_mat[i,j] /= list_diagonals_mean[j-i+n-1]
     
-    
+    print(oe_mat)
         
     hm_oe = sns.heatmap(
         oe_mat, 
@@ -87,7 +90,7 @@ def pipeline(R,HiCfile,EpiGfile) :
         norm = LogNorm()
     )  
     
-    oe_heatmap = HiCfile.replace(".RAWobserved","oe_heatmap.png")
+    oe_heatmap = HiCfile.replace(".RAWobserved","_oe_heatmap.png")
 
     fig = hm_oe.get_figure()
     fig.savefig(oe_heatmap,dpi = 400)
@@ -97,17 +100,16 @@ def pipeline(R,HiCfile,EpiGfile) :
     ## Let us compute the correlation matrix
     
     corr = np.corrcoef(oe_mat)
-    
     hm_corr = sns.heatmap(
         corr, 
-        vmin=-0.1, vmax=0.1,
+        vmin=-1, vmax=1,
         cmap= "coolwarm",
         square=True,
     )  
     
     fig = hm_corr.get_figure()
     
-    corr_heatmap = HiCfile.replace(".RAWobserved","corr_heatmap.png")
+    corr_heatmap = HiCfile.replace(".RAWobserved","_corr_heatmap.png")
 
     fig.savefig(corr_heatmap,dpi = 400)
     
@@ -120,6 +122,10 @@ def pipeline(R,HiCfile,EpiGfile) :
     
     eigenvectors = np.transpose(eigenvectors)
     
-    nameplot = HiCfile.replace(".RAWobserved","ev_plot.png")
+    nameplot = HiCfile.replace(".RAWobserved","_ev_plot.png")
     plt.plot(np.arange(n),eigenvectors[0])
     plt.savefig(nameplot)
+    
+
+
+    
