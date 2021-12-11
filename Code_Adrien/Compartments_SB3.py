@@ -75,6 +75,7 @@ def pipeline(R,HiCfile,EpiGfile) :
     
     heatmap = HiCfile.replace(".RAWobserved","_heatmap.png")
     heatmap = HiCfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    print(heatmap)
     Path(heatmap).mkdir(parents=True, exist_ok=True)
     fig = hm_scn.get_figure()
     fig.savefig(heatmap,dpi = 400)
