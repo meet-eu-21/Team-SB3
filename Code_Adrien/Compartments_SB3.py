@@ -75,8 +75,9 @@ def pipeline(R,HiCfile,EpiGfile) :
     
     heatmap = HiCfile.replace(".RAWobserved","_heatmap.png")
     heatmap = heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
-    print(heatmap)
-    Path(heatmap).mkdir(parents=True, exist_ok=True)
+    filename =os.path.basename(heatmap)
+    directory = heatmap.replace(filename,"")
+    Path(directory).mkdir(parents=True, exist_ok=True)
     fig = hm_scn.get_figure()
     fig.savefig(heatmap,dpi = 400)
     
@@ -104,7 +105,11 @@ def pipeline(R,HiCfile,EpiGfile) :
     
     oe_heatmap = HiCfile.replace(".RAWobserved","_oe_heatmap.png")
     oe_heatmap = oe_heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
-    Path(oe_heatmap).mkdir(parents=True, exist_ok=True)
+    
+    filename =os.path.basename(oe_heatmap)
+    directory = oe_heatmap.replace(filename,"")
+    
+    Path(directory).mkdir(parents=True, exist_ok=True)
     fig = hm_oe.get_figure()
     fig.savefig(oe_heatmap,dpi = 400)
     
@@ -124,6 +129,8 @@ def pipeline(R,HiCfile,EpiGfile) :
     
     corr_heatmap = HiCfile.replace(".RAWobserved","_corr_heatmap.png")
     corr_heatmap = corr_heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    filename =os.path.basename(corr_heatmap)
+    directory = corr_heatmap.replace(filename,"")
     Path(corr_heatmap).mkdir(parents=True, exist_ok=True)
     fig.savefig(corr_heatmap,dpi = 400)
     
@@ -138,7 +145,9 @@ def pipeline(R,HiCfile,EpiGfile) :
     
     nameplot = HiCfile.replace(".RAWobserved","_ev_plot.png")
     nameplot = nameplot.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
-    Path(nameplot).mkdir(parents=True, exist_ok=True)
+    filename =os.path.basename(nameplot)
+    directory = nameplot.replace(filename,"")
+    Path(directory).mkdir(parents=True, exist_ok=True)
     plt.plot(np.arange(n),eigenvectors[0])
     plt.savefig(nameplot)
     
