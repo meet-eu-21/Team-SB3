@@ -11,7 +11,6 @@ Created on Thu Dec  9 10:01:10 2021
 
 # In[1]:
 
-import wget
 import requests
 from bs4 import BeautifulSoup, NavigableString 
 from pathlib import Path
