@@ -6,7 +6,7 @@ Created on Thu Dec  9 09:58:58 2021
 @author: apauron
 """
 import get_files ## To get the filename
-import Compartments_SB3
+import Compartments_SB3_cluster
 
 url = 'http://www.lcqb.upmc.fr/meetu/dataforstudent/HiC/'
 a = get_files.approfondissement_url(url)
@@ -24,7 +24,7 @@ for file in a :
         list_resolutions.append(100000)
 
 for (filetocomp,resolution) in zip(list_files_intra,list_resolutions) :
-    Compartments_SB3.pipeline(resolution,filetocomp,"E116_15_coreMarks_dense.txt")
+    Compartments_SB3_cluster.pipeline(resolution,filetocomp,"E116_15_coreMarks_dense.txt")
     
 
         
