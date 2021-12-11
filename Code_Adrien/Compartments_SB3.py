@@ -131,7 +131,7 @@ def pipeline(R,HiCfile,EpiGfile) :
     corr_heatmap = corr_heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
     filename =os.path.basename(corr_heatmap)
     directory = corr_heatmap.replace(filename,"")
-    Path(corr_heatmap).mkdir(parents=True, exist_ok=True)
+    Path(directory).mkdir(parents=True, exist_ok=True)
     fig.savefig(corr_heatmap,dpi = 400)
     
     plt.close()
