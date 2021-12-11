@@ -74,7 +74,7 @@ def pipeline(R,HiCfile,EpiGfile) :
     
     
     heatmap = HiCfile.replace(".RAWobserved","_heatmap.png")
-    heatmap = HiCfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    heatmap = heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
     print(heatmap)
     Path(heatmap).mkdir(parents=True, exist_ok=True)
     fig = hm_scn.get_figure()
@@ -103,7 +103,7 @@ def pipeline(R,HiCfile,EpiGfile) :
     )  
     
     oe_heatmap = HiCfile.replace(".RAWobserved","_oe_heatmap.png")
-    oe_heatmap = HiCfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    oe_heatmap = oe_heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
     Path(oe_heatmap).mkdir(parents=True, exist_ok=True)
     fig = hm_oe.get_figure()
     fig.savefig(oe_heatmap,dpi = 400)
@@ -123,7 +123,7 @@ def pipeline(R,HiCfile,EpiGfile) :
     fig = hm_corr.get_figure()
     
     corr_heatmap = HiCfile.replace(".RAWobserved","_corr_heatmap.png")
-    corr_heatmap = HiCfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    corr_heatmap = corr_heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
     Path(corr_heatmap).mkdir(parents=True, exist_ok=True)
     fig.savefig(corr_heatmap,dpi = 400)
     
@@ -137,7 +137,7 @@ def pipeline(R,HiCfile,EpiGfile) :
     eigenvectors = np.transpose(eigenvectors)
     
     nameplot = HiCfile.replace(".RAWobserved","_ev_plot.png")
-    nameplot = HiCfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    nameplot = nameplot.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
     Path(nameplot).mkdir(parents=True, exist_ok=True)
     plt.plot(np.arange(n),eigenvectors[0])
     plt.savefig(nameplot)
