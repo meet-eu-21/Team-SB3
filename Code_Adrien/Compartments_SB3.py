@@ -68,7 +68,7 @@ def pipeline(R,HiCfile,EpiGfile) :
     
     ### Path of my own folder in cluster ##
     
-    save_path = "/shared/home/apauron"
+    save_path = "/shared/home/apauron/"
     
     
     
