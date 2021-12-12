@@ -119,7 +119,8 @@ def pipeline(R,HiCfile,EpiGfile) :
     
     corr = np.corrcoef(oe_mat)
     hm_corr = sns.heatmap(
-        corr, 
+        corr,
+        vmin = -0.1, vmax = 0.1,
         cmap= "coolwarm",
         square=True,
     )  
