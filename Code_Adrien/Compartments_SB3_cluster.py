@@ -1,7 +1,7 @@
-import sys
 import os
 import numpy as np
 import scipy
+import h5py
 from matplotlib.colors import LogNorm, Normalize
 from scipy.spatial import ConvexHull
 from scipy import sparse
@@ -18,13 +18,10 @@ from pathlib import Path
     
 #========================================= Simulation function ======================================
 
-def pipeline(R,HiCfile,EpiGfile) :
+def pipeline(R,HiCfile,gene_density_file) :
 
-    NbmaxEpi=15 #Epi states go from 0 to 15
     alpha=0.227
-    selectedmark=1 #index of the selected mark
     HiCfilename= HiCfile # matrix containing the contact Hi-C
-    EpiGfilename= EpiGfile #EpiGenetic file associating to each bin an epigenetic type
     
     #Build matrix
     A=np.loadtxt(HiCfilename) #Load the matrix
@@ -41,7 +38,7 @@ def pipeline(R,HiCfile,EpiGfile) :
         
     ##Filter the matrix
     
-    filtered_mat = HiCtoolbox.filteramat(binned_map)[0]
+    filtered_mat, binsaved = HiCtoolbox.filteramat(binned_map)
     print('Input at the good resolution : ',np.shape(filtered_mat))
     
     
@@ -94,7 +91,6 @@ def pipeline(R,HiCfile,EpiGfile) :
             else :       
                 oe_mat[i,j] /= list_diagonals_mean[j-i+n-1]
     
-    print(oe_mat)
         
     hm_oe = sns.heatmap(
         oe_mat, 
@@ -105,11 +101,7 @@ def pipeline(R,HiCfile,EpiGfile) :
     
     oe_heatmap = HiCfile.replace(".RAWobserved","_oe_heatmap.png")
     oe_heatmap = oe_heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
-    
-    filename =os.path.basename(oe_heatmap)
-    directory = oe_heatmap.replace(filename,"")
-    
-    Path(directory).mkdir(parents=True, exist_ok=True)
+  
     fig = hm_oe.get_figure()
     fig.savefig(oe_heatmap,dpi = 400)
     
@@ -129,9 +121,7 @@ def pipeline(R,HiCfile,EpiGfile) :
     
     corr_heatmap = HiCfile.replace(".RAWobserved","_corr_heatmap.png")
     corr_heatmap = corr_heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
-    filename =os.path.basename(corr_heatmap)
-    directory = corr_heatmap.replace(filename,"")
-    Path(directory).mkdir(parents=True, exist_ok=True)
+ 
     fig.savefig(corr_heatmap,dpi = 400)
     
     plt.close()
@@ -143,14 +133,88 @@ def pipeline(R,HiCfile,EpiGfile) :
     
     eigenvectors = np.transpose(eigenvectors)
     
-    nameplot = HiCfile.replace(".RAWobserved","_ev_plot.png")
+    s_vector = eigenvectors[0]
+        
+    
+    
+    f = h5py.File(gene_density_file, 'r')
+    data_name = list(f.keys())[0]
+    dset = f[data_name]
+    data = dset[...]
+
+    positive = True
+    if np.sum( data[np.where(s_vector>0)]) < np.sum( data[np.where(s_vector<0)]) :
+        positive = False
+
+    
+    z2 = np.zeros(len(s_vector))
+    
+    plt.plot(np.arange(len(s_vector)), s_vector)
+    plt.xlabel("Index of the vector")
+    plt.ylabel("First eigenvector value")
+    plt.title("First eigenvector value")
+    plt.tight_layout()
+    
+    if positive : 
+        plt.fill_between(np.arange(len(s_vector)), s_vector, 0.0,
+                         where=(s_vector >= z2),
+                         color='red', label = "Compartment A")
+        plt.fill_between(np.arange(len(s_vector)), s_vector, 0.0,
+                         where=(s_vector < z2),
+                         color='blue', label = "Compartment B")
+
+        
+        plt.legend()
+    else :
+        
+        plt.fill_between(np.arange(len(s_vector)), s_vector, 0.0,
+                         where=(s_vector < z2),
+                         color='red',label = "Compartment A")
+        plt.fill_between(np.arange(len(s_vector)), s_vector, 0.0,
+                         where=(s_vector >= z2),
+                         color='blue',label = "Compartment B")
+        plt.legend()
+
+    nameplot = HiCfile.replace(".RAWobserved","_compartments.png")
     nameplot = nameplot.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
-    filename =os.path.basename(nameplot)
-    directory = nameplot.replace(filename,"")
-    Path(directory).mkdir(parents=True, exist_ok=True)
-    plt.plot(np.arange(n),eigenvectors[0])
+    
     plt.savefig(nameplot)
+    plt.close()
+    
+    #3D
+    print('3D')#Here : sparse int64
+    contact_map=HiCtoolbox.SCN(filtered_mat.copy())
+    contact_map[contact_map==0] = 0.000000001
+    print("début_fast_floyd")
+    contact_map=np.asarray(contact_map)**alpha #now we are not sparse at all
+    dist_matrix = HiCtoolbox.fastFloyd(1/contact_map) #shortest path on the matrix
+    dist_matrix=dist_matrix-np.diag(np.diag(dist_matrix))#remove the diagonal
+    dist_matrix=(dist_matrix+np.transpose(dist_matrix))/2; #just to be sure that the matrix is symetric, not really usefull in theory
+    print("fin_fast_floyd")
+"""    
+  
+    XYZ,E=HiCtoolbox.sammon(dist_matrix, 3)#with the one from tom j pollard
+    
+    
+    if positive :
+        list_compartments = np.where(s_vector > 0,"A","B")
+    else :
+        list_compartments = np.where(s_vector > 0, "B","A")
+    
     
 
-
+            
+    ### Convert to pdb file
     
+    #point rescale
+    hull=ConvexHull(XYZ)
+    scale=100/hull.area**(1/3)
+    XYZ=XYZ*scale
+    
+    pdbfilename  = HiCfile.replace(".RAWobserved","_3D.pdb")
+    pdbfilename = pdbfilename.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    HiCtoolbox.writePDB(pdbfilename,XYZ,list_compartments)
+        
+                
+"""
+

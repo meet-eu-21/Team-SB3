@@ -350,8 +350,6 @@ def sammon(x, n, display = 2, inputdist = 'raw', maxhalves = 20, maxiter = 500, 
 
         # Report progress
         E = E_new
-        if display > 1:
-            print('epoch = %d : E = %12.10f'% (i+1, E * scale))
 
     if i == maxiter-1:
         print('Warning: maxiter exceeded. Sammon mapping may not have converged...')
@@ -365,8 +363,23 @@ def sammon(x, n, display = 2, inputdist = 'raw', maxhalves = 20, maxiter = 500, 
 #####
 #Output WRITER
 
-
+"""
 def writePDB(fnameout,value,EpiValue):
+
+	Sh=np.shape(value)
+	#out
+	fout=open(fnameout,'w')
+	i=1
+	while i<=Sh[0]:
+		S="{:6s}{:5d} {:^4s}{:1s}{:3s} {:1s}{:4d}{:1s}   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}          {:>2s}{:2s}" #PDB format in python
+		#print("here",value[i-1,0],value[i-1,1],EpiValue[i-1])
+		S=S.format('ATOM',i,'CA','','ALA','A',i,'',float(value[i-1,0]),float(value[i-1,1]),float(value[i-1,2]),1,float(EpiValue[i-1]),'C','')
+		#print(S)
+		fout.write(S+"\n")
+		i+=1
+	fout.close()
+"""
+def writePDB(fnameout,value,list_comp):
 	"""
 	write a PDB from value contain in value
 	just bored to read 200 pages of biopython for a simple writing script
@@ -379,9 +392,8 @@ def writePDB(fnameout,value,EpiValue):
 	while i<=Sh[0]:
 		S="{:6s}{:5d} {:^4s}{:1s}{:3s} {:1s}{:4d}{:1s}   {:8.3f}{:8.3f}{:8.3f}{:6.2f}{:6.2f}          {:>2s}{:2s}" #PDB format in python
 		#print("here",value[i-1,0],value[i-1,1],EpiValue[i-1])
-		S=S.format('ATOM',i,'CA','','SOL','A',i,'',float(value[i-1,0]),float(value[i-1,1]),float(value[i-1,2]),1,float(EpiValue[i-1]),'O','')
+		S=S.format('ATOM',i,'CA',list_comp[i-1],'ALA','A',i,' ',float(value[i-1,0]),float(value[i-1,1]),float(value[i-1,2]),1,0,'C','')
 		#print(S)
 		fout.write(S+"\n")
 		i+=1
 	fout.close()
-
