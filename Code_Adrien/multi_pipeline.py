@@ -16,6 +16,7 @@ list_files_intra = []
 list_resolutions = []
 list_genes_density_files = []
 for file in a :
+<<<<<<< Updated upstream:Code_Adrien/multi_pipeline.py
 	if "intrachromosomal" in file :
 		list_files_intra.append(file)
 	if "25kb_resolution" in file :
@@ -40,5 +41,19 @@ for file in a :
 for (filetocomp,resolution,gened_file) in zip(list_files_intra,list_resolutions,list_genes_density_files) :
 
 	Compartments_SB3_cluster.pipeline(resolution,filetocomp,gened_file)
+=======
+    if "intrachromosomal" in file :
+        list_files_intra.append(file)
+    if "25kb_resolution" in file :
+        list_resolutions.append(25000)
+    if "100kb_resolution" in file :
+        list_resolutions.append(100000)
+
+
+for (filetocomp,resolution) in zip(list_files_intra,list_resolutions) :
+    print(filetocomp)
+    print(resolution)
+    Compartments_SB3_cluster.pipeline(resolution,filetocomp,"E116_15_coreMarks_dense.txt")
+>>>>>>> Stashed changes:Code/multi_pipeline.py
     
 

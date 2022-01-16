@@ -185,6 +185,7 @@ def filteramat(Hicmat,Filterextremum=True,factor=1.5):
 	segmenter1=sumHicmat>0
 	A=np.where(segmenter1)
 	Hicmatreduce=Hicmatreduce[A[1],:]
+
 	Hicmatreduce=Hicmatreduce[:,A[1]]
 	if Filterextremum:
 		#second step : filter lower bin

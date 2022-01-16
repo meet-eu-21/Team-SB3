@@ -181,21 +181,62 @@ def pipeline(R,HiCfile,gene_density_file) :
     plt.savefig(nameplot)
     plt.close()
     
+    """
+        #Build color annotation at desired resolution
+    color=pd.read_csv(EpiGfilename,delimiter='\t',header=None,names=[1,2,3,4]) ### 4 columns 
+    color=color[color[1]=='chr16']#take only chr of interest
+    number=color[4].max() #number of color in the file
+    color_vec=np.zeros((LENTEST,number+1)) #build array at pb resolution LENchr * number of color
+    i=0
+    while i<np.shape(color)[0]:
+    	color_vec[color[2].iloc[i]:color[3].iloc[i],color[4].iloc[i]]=1 ## iloc = gets the row
+    	i+=1
+        
+    # At the end you get for each bp the epimark associated with a 1 at the column corresponding.
+    # For ex, if the epi mark is 15 at bp 1000, the 1000th row has a 1 on the 16th column and 0 elsewhere.
+      
+    
+    color_bins=HiCtoolbox.bin2d(color_vec,R,1) ## keep 16 epimarks at col but is binned with given resolution
+    color_bins=color_bins/np.amax(color_bins) ##To normalize
+    
+    #The score corresponding to the "density" of each epiGmark"
+    print('Bp cover by this mark, has to be >0 :',np.sum(color_bins[:,selectedmark]) )
+    
+    """
+    
+    # FILTER like the HiC tool box
+    print("before filtering : ",np.shape(binned_map))
+
+    
+    print("after filtering : ",np.shape(filtered_mat))#,np.shape(color_vecseg))
+    
+    """
+    ## Change our previous color_bins to get only the bins corresponding to filtered map and the column associated with our epiGmark selected
+    color2=color_bins[binsaved[1]] #filter the epi by removed bin in HiC
+    color2=color2[:,selectedmark] #now color2 is 1D
+    color2=np.float64(color2.todense()) #type issue
+    """
     #3D
     print('3D')#Here : sparse int64
     contact_map=HiCtoolbox.SCN(filtered_mat.copy())
     contact_map[contact_map==0] = 0.000000001
-    print("début_fast_floyd")
     contact_map=np.asarray(contact_map)**alpha #now we are not sparse at all
     dist_matrix = HiCtoolbox.fastFloyd(1/contact_map) #shortest path on the matrix
     dist_matrix=dist_matrix-np.diag(np.diag(dist_matrix))#remove the diagonal
     dist_matrix=(dist_matrix+np.transpose(dist_matrix))/2; #just to be sure that the matrix is symetric, not really usefull in theory
-    print("fin_fast_floyd")
-"""    
-  
+    
+    
+    #MDS
+    #embedding = MDS(n_components=3)#LOAD the MDS #With scikit-learn mds
+    #XYZ = embedding.fit_transform(dist_matrix) #Make the transform
+    #XYZ=np.float64(XYZ)
     XYZ,E=HiCtoolbox.sammon(dist_matrix, 3)#with the one from tom j pollard
     
     
+    
+    """
+    print("Output shape : ",np.shape(XYZ),np.shape(color2))
+    """
     if positive :
         list_compartments = np.where(s_vector > 0,"A","B")
     else :
@@ -216,5 +257,5 @@ def pipeline(R,HiCfile,gene_density_file) :
     HiCtoolbox.writePDB(pdbfilename,XYZ,list_compartments)
         
                 
-"""
+
 
