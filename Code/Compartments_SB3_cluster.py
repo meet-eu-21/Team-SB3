@@ -1,16 +1,15 @@
 import os
 import numpy as np
-import scipy
 import h5py
 from matplotlib.colors import LogNorm, Normalize
 from scipy.spatial import ConvexHull
 from scipy import sparse
 import matplotlib.pyplot as plt
-import pandas as pd
 import seaborn as sns
-from sklearn.manifold import MDS #If you want the scikit learn mds
 import HiCtoolbox
+from hmmlearn import hmm
 from pathlib import Path
+from sklearn.decomposition import PCA
 
 
 
@@ -116,7 +115,7 @@ def pipeline(R,HiCfile,gene_density_file) :
         cmap= "coolwarm",
         square=True,
     )  
-    
+        
     fig = hm_corr.get_figure()
     
     corr_heatmap = HiCfile.replace(".RAWobserved","_corr_heatmap.png")
@@ -127,16 +126,49 @@ def pipeline(R,HiCfile,gene_density_file) :
     plt.close()
     
     
-    ## Get the svd decomposition
+    ## Do the PCA analysis
     
-    eigenvalues, eigenvectors = np.linalg.eig(corr)
-    
-    eigenvectors = np.transpose(eigenvectors)
-    
-    s_vector = eigenvectors[0]
         
+    pca = PCA(n_components=2)
+    pca.fit(corr)
+    
+
+    
+    s_vector = pca.components_[0]
+    
+    vfile = HiCfile.replace(".RAWobserved","_vp.txt")
+    
+
+    with open(vfile,'w') as f :
+        for x in s_vector :
+            f.write(str(x) + "\n")
     
     
+    ## Do the HMM analysis
+    
+    remodel = hmm.GaussianHMM(n_components=3, covariance_type="diag", n_iter=1000)
+
+    remodel.fit(corr)
+
+    Z2 = remodel.predict(corr)
+    list_compartments = []
+    
+    
+    for i in range(len(Z2)) :
+        if Z2[i] == 0 :
+            list_compartments.append(0.0)
+        if Z2[i] == 2 :
+            list_compartments.append(1.0)
+        if Z2[i] == 1 :
+            list_compartments.append(-1.0)
+    
+    
+    compfile = HiCfile.replace(".RAWobserved","_comp.txt")
+
+    with open(compfile,'w') as f :
+        for x in list_compartments :
+            f.write(str(x) + "\n")
+            
     f = h5py.File(gene_density_file, 'r')
     data_name = list(f.keys())[0]
     dset = f[data_name]
@@ -236,12 +268,15 @@ def pipeline(R,HiCfile,gene_density_file) :
     
     """
     print("Output shape : ",np.shape(XYZ),np.shape(color2))
+    
+    
     """
+    
+    
     if positive :
         list_compartments = np.where(s_vector > 0,"A","B")
     else :
         list_compartments = np.where(s_vector > 0, "B","A")
-    
     
 
             
@@ -255,7 +290,10 @@ def pipeline(R,HiCfile,gene_density_file) :
     pdbfilename  = HiCfile.replace(".RAWobserved","_3D.pdb")
     pdbfilename = pdbfilename.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
     HiCtoolbox.writePDB(pdbfilename,XYZ,list_compartments)
-        
+    
+    ## Generate two text files : one for compartments and the other for the first eigenvector
+    
+    
                 
 
 
