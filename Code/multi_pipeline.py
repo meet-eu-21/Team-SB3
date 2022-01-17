@@ -47,9 +47,10 @@ for (filetocomp,resolution,gened_file) in zip(list_files_intra,list_resolutions,
         list_resolutions.append(100000)
 
 
-for (filetocomp,resolution) in zip(list_files_intra,list_resolutions) :
+for (filetocomp,resolution,gdfile) in zip(list_files_intra,list_resolutions,list_genes_density_files) :
     print(filetocomp)
     print(resolution)
-    Compartments_SB3_cluster.pipeline(resolution,filetocomp,"E116_15_coreMarks_dense.txt")
+    print(gdfile)
+    Compartments_SB3_cluster.pipeline(resolution,filetocomp,gdfile)
     
 

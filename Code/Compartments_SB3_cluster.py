@@ -63,7 +63,7 @@ def pipeline(R,HiCfile,gene_density_file) :
     
     ### Path of my own folder in cluster ##
     
-    save_path = "/shared/home/apauron/"
+    save_path = "/shared/projects/form_2021_21/SB3/"
     
     
     
