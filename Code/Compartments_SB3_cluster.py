@@ -34,12 +34,12 @@ def pipeline(R,HiCfile,gene_density_file) :
     A = sparse.coo_matrix( (A[:,2], (A[:,0],A[:,1])))
     binned_map=HiCtoolbox.bin2d(A,R,R) #!become csr sparse array
     LENTEST=np.shape(A)[0]
-    print('Input at the good resolution : ',np.shape(binned_map))
+    print('Resolution after binning : ',np.shape(binned_map))
         
     ##Filter the matrix
     
     filtered_mat, binsaved = HiCtoolbox.filteramat(binned_map)
-    print('Input at the good resolution : ',np.shape(filtered_mat))
+    print('Resolution after filtering : ',np.shape(filtered_mat))
     
     
     
@@ -48,7 +48,7 @@ def pipeline(R,HiCfile,gene_density_file) :
     
     binned_map_scn = HiCtoolbox.SCN(filtered_mat)
     
-    print('Input at the good resolution : ',np.shape(binned_map_scn))
+    print('Resolution after SCN: ',np.shape(binned_map_scn))
     
     
     ## Let us see a heatmap corresponding to the SCN binned_map :
@@ -140,7 +140,14 @@ def pipeline(R,HiCfile,gene_density_file) :
     vfile = HiCfile.replace(".RAWobserved","_vp.txt")
     vfile = vfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
 
+    ## Write the corresponding eigenvector in a file 
 
+    list_filtered = [i for i in range(1,np.shape(binned_map)[0]) if i not in binsaved ]
+    
+    for x in list_filtered :
+        s_vector.insert(x-1,-1.0)
+
+    
     with open(vfile,'w') as f :
         for x in s_vector :
             f.write(str(x) + "\n")
@@ -148,7 +155,7 @@ def pipeline(R,HiCfile,gene_density_file) :
     
     ## Do the HMM analysis
     
-    remodel = hmm.GaussianHMM(n_components=3, covariance_type="diag", n_iter=1000)
+    remodel = hmm.GaussianHMM(n_components=2, covariance_type="diag", n_iter=1000)
 
     remodel.fit(corr)
 
@@ -159,19 +166,26 @@ def pipeline(R,HiCfile,gene_density_file) :
     for i in range(len(Z2)) :
         if Z2[i] == 0 :
             list_compartments.append(0.0)
-        if Z2[i] == 2 :
-            list_compartments.append(1.0)
         if Z2[i] == 1 :
-            list_compartments.append(-1.0)
+            list_compartments.append(1.0)
+
     
+    
+    for x in list_filtered :
+        list_compartments.insert(x-1,-1.0)
     
     compfile = HiCfile.replace(".RAWobserved","_comp.txt")
     compfile = compfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
 
+    ## Write the comps
+
+
     with open(compfile,'w') as f :
         for x in list_compartments :
             f.write(str(x) + "\n")
-            
+    
+
+        
     f = h5py.File(gene_density_file, 'r')
     data_name = list(f.keys())[0]
     dset = f[data_name]
@@ -239,11 +253,7 @@ def pipeline(R,HiCfile,gene_density_file) :
     
     """
     
-    # FILTER like the HiC tool box
-    print("before filtering : ",np.shape(binned_map))
 
-    
-    print("after filtering : ",np.shape(filtered_mat))#,np.shape(color_vecseg))
     
     """
     ## Change our previous color_bins to get only the bins corresponding to filtered map and the column associated with our epiGmark selected
