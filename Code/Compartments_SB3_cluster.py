@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import h5py
+import scipy
 from matplotlib.colors import LogNorm, Normalize
 from scipy.spatial import ConvexHull
 from scipy import sparse
@@ -10,7 +11,7 @@ import HiCtoolbox
 from hmmlearn import hmm
 from pathlib import Path
 from sklearn.decomposition import PCA
-
+from sklearn.manifold import MDS
 
 
 
@@ -137,7 +138,8 @@ def pipeline(R,HiCfile,gene_density_file) :
     s_vector = pca.components_[0]
     
     vfile = HiCfile.replace(".RAWobserved","_vp.txt")
-    
+    vfile = vfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+
 
     with open(vfile,'w') as f :
         for x in s_vector :
@@ -164,6 +166,7 @@ def pipeline(R,HiCfile,gene_density_file) :
     
     
     compfile = HiCfile.replace(".RAWobserved","_comp.txt")
+    compfile = compfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
 
     with open(compfile,'w') as f :
         for x in list_compartments :
@@ -253,18 +256,23 @@ def pipeline(R,HiCfile,gene_density_file) :
     contact_map=HiCtoolbox.SCN(filtered_mat.copy())
     contact_map[contact_map==0] = 0.000000001
     contact_map=np.asarray(contact_map)**alpha #now we are not sparse at all
-    dist_matrix = HiCtoolbox.fastFloyd(1/contact_map) #shortest path on the matrix
+    
+    print("begin fast floyd")
+    dist_matrix = scipy.sparse.csgraph.floyd_warshall(1/contact_map,return_predecessors = False) #shortest path on the matrix
+    print("fast floyd ended")
     dist_matrix=dist_matrix-np.diag(np.diag(dist_matrix))#remove the diagonal
     dist_matrix=(dist_matrix+np.transpose(dist_matrix))/2; #just to be sure that the matrix is symetric, not really usefull in theory
     
+
     
     #MDS
-    #embedding = MDS(n_components=3)#LOAD the MDS #With scikit-learn mds
-    #XYZ = embedding.fit_transform(dist_matrix) #Make the transform
+    embedding = MDS(n_components=3)#LOAD the MDS #With scikit-learn mds
+    XYZ = embedding.fit_transform(dist_matrix) #Make the transform
+    print("MDS transform done")
     #XYZ=np.float64(XYZ)
-    XYZ,E=HiCtoolbox.sammon(dist_matrix, 3)#with the one from tom j pollard
+    #XYZ,E=HiCtoolbox.sammon(dist_matrix, 3)#with the one from tom j pollard
     
-    
+    #print("Sammon done")
     
     """
     print("Output shape : ",np.shape(XYZ),np.shape(color2))
@@ -285,11 +293,13 @@ def pipeline(R,HiCfile,gene_density_file) :
     #point rescale
     hull=ConvexHull(XYZ)
     scale=100/hull.area**(1/3)
+    print("ConvexHull done")
     XYZ=XYZ*scale
     
     pdbfilename  = HiCfile.replace(".RAWobserved","_3D.pdb")
     pdbfilename = pdbfilename.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
     HiCtoolbox.writePDB(pdbfilename,XYZ,list_compartments)
+    print("PDB written")
     
     ## Generate two text files : one for compartments and the other for the first eigenvector
     

@@ -166,12 +166,15 @@ def fastFloyd(contact):
 	"""      
 	n = contact.shape[0]    
 	shortest = contact    
-	for k in range(n):        
-		i2k = np.tile(shortest[k,:], (n, 1))        
-		k2j = np.tile(shortest[:, k], (n, 1)).T        
-		shortest = np.minimum(shortest, i2k + k2j)    
+	for k in range(n):       
+		i2k = np.tile(shortest[k,:], (n, 1))
+		print("i2k computed")        
+		k2j = np.tile(shortest[:, k], (n, 1)).T
+		print("k2j computed")        
+		shortest = np.minimum(shortest, i2k + k2j)
+		print("shortest found")    
 	return shortest
-
+	
 
 def filteramat(Hicmat,Filterextremum=True,factor=1.5):
 	"""
