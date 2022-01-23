@@ -10,7 +10,7 @@ from os import walk
 import os
 
 
-def getfiles(mypath) :
+def getfiles(mypath,expression) :
 
     f = []
     for dirpath, dirnames, filenames in walk(mypath, topdown = False) :
@@ -21,7 +21,7 @@ def getfiles(mypath) :
     rawobserveds = []
     
     for file in f :
-        if ".RAWobserved" in file :
+        if expression in file :
             rawobserveds.append(file)
     
     return rawobserveds

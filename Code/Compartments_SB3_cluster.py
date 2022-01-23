@@ -153,36 +153,8 @@ def pipeline(R,HiCfile,gene_density_file) :
             f.write(str(x) + "\n")
     
     
-    ## Do the HMM analysis
-    
-    remodel = hmm.GaussianHMM(n_components=2, covariance_type="diag", n_iter=1000)
+   
 
-    remodel.fit(corr)
-
-    Z2 = remodel.predict(corr)
-    list_compartments = []
-    
-    
-    for i in range(len(Z2)) :
-        if Z2[i] == 0 :
-            list_compartments.append(0.0)
-        if Z2[i] == 1 :
-            list_compartments.append(1.0)
-
-    
-    
-    for x in list_filtered :
-        list_compartments.insert(x-1,-1.0)
-    
-    compfile = HiCfile.replace(".RAWobserved","_comp.txt")
-    compfile = compfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
-
-    ## Write the comps
-
-
-    with open(compfile,'w') as f :
-        for x in list_compartments :
-            f.write(str(x) + "\n")
     
 
         
@@ -195,6 +167,41 @@ def pipeline(R,HiCfile,gene_density_file) :
     if np.sum( data[np.where(s_vector>0)]) < np.sum( data[np.where(s_vector<0)]) :
         positive = False
 
+    compfile = HiCfile.replace(".RAWobserved","_comp.txt")
+    compfile = compfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+
+    ## Write the comps
+    ## Do the HMM analysis
+    
+    remodel = hmm.GaussianHMM(n_components=2, covariance_type="diag", n_iter=1000)
+
+    remodel.fit(corr)
+
+    Z2 = remodel.predict(corr)
+    list_compartments = []
+    
+    if positive :
+        for i in range(len(Z2)) :
+            if Z2[i] == 0 :
+                list_compartments.append(0.0)
+            if Z2[i] == 1 :
+                list_compartments.append(1.0)
+    
+    else :
+        for i in range(len(Z2)) :
+            if Z2[i] == 0 :
+                list_compartments.append(1.0)
+            if Z2[i] == 1 :
+                list_compartments.append(0.0)
+  
+    
+    for x in list_filtered :
+        list_compartments.insert(x-1,-1.0)
+    
+
+    with open(compfile,'w') as f :
+        for x in list_compartments :
+            f.write(str(x) + "\n")
     
     z2 = np.zeros(len(s_vector))
     
