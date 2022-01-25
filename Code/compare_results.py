@@ -19,7 +19,7 @@ path_parent = os.path.dirname(os.getcwd())
 
 ## Name of the folder containing the data
 folder_gold_standards = "Gold_standards"
-folder_results = "Results_intra"
+folder_results = "Results_Intra"
 
 files_gold_standard = get_files_cluster.getfiles(os.path.join(path_parent,folder_gold_standards),"comp")
 files_results = get_files_cluster.getfiles(os.path.join(path_parent,folder_results),"comp")
@@ -56,11 +56,23 @@ for resolution in ["25kb","100kb"] :
             
             else :
                 lgold = np.copy(lgold[:np.shape(lresults)[0]])
+            
+            inv_results = np.ones(np.shape(lresults)[0],) - lresults
+            print(inv_results)
+            inv_results = np.where(inv_results != 2.0, inv_results, -1.0)
+            print(inv_results)
         
             compare_mat = np.equal(lresults,lgold)
             
             count = np.sum(compare_mat)
-            list_similarity.append(count/min(np.shape(lresults)[0],np.shape(lgold)[0]))
+            sim = count/min(np.shape(lresults)[0],np.shape(lgold)[0])
+            
+            compare_mat_inv = np.equal(inv_results,lgold)
+            count_int = np.sum(compare_mat_inv)
+            sim_inv = count_int/min(np.shape(lresults)[0],np.shape(lgold)[0])
+            list_similarity.append(max(sim,sim_inv))
+            
+            
         
         res_df[cell_type] = np.round(list_similarity,2)
         res_df.index = list_chr

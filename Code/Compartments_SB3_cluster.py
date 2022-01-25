@@ -136,6 +136,7 @@ def pipeline(R,HiCfile,gene_density_file) :
 
     
     s_vector = pca.components_[0]
+    list_vector = list(s_vector)
     
     vfile = HiCfile.replace(".RAWobserved","_vp.txt")
     vfile = vfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
@@ -145,11 +146,11 @@ def pipeline(R,HiCfile,gene_density_file) :
     list_filtered = [i for i in range(1,np.shape(binned_map)[0]) if i not in binsaved ]
     
     for x in list_filtered :
-        s_vector.insert(x-1,-1.0)
+        list_vector.insert(x-1,-1.0)
 
     
     with open(vfile,'w') as f :
-        for x in s_vector :
+        for x in list_vector :
             f.write(str(x) + "\n")
     
     
@@ -211,23 +212,24 @@ def pipeline(R,HiCfile,gene_density_file) :
     plt.title("First eigenvector value")
     plt.tight_layout()
     
-    if positive : 
-        plt.fill_between(np.arange(len(s_vector)), s_vector, 0.0,
-                         where=(s_vector >= z2),
+    if positive :
+        plt.plot(np.arange(len(s_vector)), relu(s_vector),'r')
+
+        plt.fill_between(np.arange(len(s_vector)), relu(s_vector), 0,
                          color='red', label = "Compartment A")
-        plt.fill_between(np.arange(len(s_vector)), s_vector, 0.0,
-                         where=(s_vector < z2),
+        plt.plot(np.arange(len(s_vector)), relumin(s_vector),'b')
+
+        plt.fill_between(np.arange(len(s_vector)), relumin(s_vector), 0,
                          color='blue', label = "Compartment B")
 
         
         plt.legend()
     else :
-        
-        plt.fill_between(np.arange(len(s_vector)), s_vector, 0.0,
-                         where=(s_vector < z2),
+        plt.plot(np.arange(len(s_vector)), relumin(s_vector),'r')
+        plt.fill_between(np.arange(len(s_vector)), relumin(s_vector), 0,
                          color='red',label = "Compartment A")
-        plt.fill_between(np.arange(len(s_vector)), s_vector, 0.0,
-                         where=(s_vector >= z2),
+        plt.plot(np.arange(len(s_vector)), relu(s_vector),'b')
+        plt.fill_between(np.arange(len(s_vector)), relu(s_vector), 0,
                          color='blue',label = "Compartment B")
         plt.legend()
 

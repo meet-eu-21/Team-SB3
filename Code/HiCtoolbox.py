@@ -168,11 +168,8 @@ def fastFloyd(contact):
 	shortest = contact    
 	for k in range(n):       
 		i2k = np.tile(shortest[k,:], (n, 1))
-		print("i2k computed")        
 		k2j = np.tile(shortest[:, k], (n, 1)).T
-		print("k2j computed")        
 		shortest = np.minimum(shortest, i2k + k2j)
-		print("shortest found")    
 	return shortest
 	
 
