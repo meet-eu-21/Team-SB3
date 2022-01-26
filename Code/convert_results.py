@@ -11,38 +11,40 @@ import pandas as pd
 from numpy import genfromtxt
 
 ### Get the parent folder of the working directory
-path_parent = os.path.dirname(os.getcwd())
-path_SB1 = os.path.join(path_parent,"Results_SB1_intra")
+path_parent = os.path.dirname(os.getcwd()) 
+path_SB1 = os.path.join(path_parent,"Results_SB1_intra") #location of SB1 intrachromosomal results to convert
 
 
-folder_results = "Results_Intra"
-path_SB3 = os.path.join(path_parent,folder_results)
+folder_results = "Results_Intra" 
+path_SB3 = os.path.join(path_parent,folder_results) #location of SB3 intrachromosomal results to convert
 
+###################################################Convert SB1 results to SB3 results##########################################
 
 def SB1toSB3(path):
-    filestoconvert = get_files_cluster.getfiles(path,"")
+    filestoconvert = get_files_cluster.getfiles(path,"") #get all the files in the path
     for file in filestoconvert :
         for resolution in ["25kb","100kb"] :
             if resolution in file :
-                df_file = pd.read_csv(file,sep = ' ',header = None)
-                df_file["chrname"] = df_file[0] + df_file[1].astype(str)
-                df_file["comp"] = df_file[4]
-                df_file = df_file[["chrname","comp"]]
-                chr_values = pd.unique(df_file.chrname)
-                grouped = df_file.groupby(df_file.chrname)
+                df_file = pd.read_csv(file,sep = ' ',header = None) #get the SB1 file
+                df_file["chrname"] = df_file[0] + df_file[1].astype(str) #transform chr x to chrx
+                df_file["comp"] = df_file[4] #get the comp number
+                df_file = df_file[["chrname","comp"]] #because SB3 type file is only chrname and comp
+                chr_values = pd.unique(df_file.chrname) #get the chr values
+                grouped = df_file.groupby(df_file.chrname) #to split according to chr name
                 for chr in chr_values :
                     split_df = grouped.get_group(chr)
                     newsplit = split_df.copy()
-                    newsplit.comp[split_df.comp == 0.0] = -1.0
-                    newsplit.comp[split_df.comp == -1.0] = 0.0
-                    filename = os.path.join(path_parent,"SB1_converted_SB3",chr + "_" + resolution + "_comp.txt")
-                    split_df.comp.to_csv(filename,header = False, index = False)
+                    newsplit.comp[split_df.comp == 0.0] = -1.0 #Convert the comp because we have not the same metrics
+                    newsplit.comp[split_df.comp == -1.0] = 0.0 #same
+                    filename = os.path.join(path_parent,"SB1_converted_SB3",chr + "_" + resolution + "_comp.txt") 
+                    split_df.comp.to_csv(filename,header = False, index = False) #create the files corresponding to our metric
                     
 list_chr = os.listdir(os.path.join(path_parent,folder_results,"HUVEC","25kb_resolution_intrachromosomal"))
 
+###################################################Convert SB3 results to SB1 results##########################################
 
 def SB3toSB1(path):
-    files_results = get_files_cluster.getfiles(path,"comp")
+    files_results = get_files_cluster.getfiles(path,"comp") #get files inside the path given
 
     for resolution in ["25kb","100kb"] :
         
@@ -54,14 +56,20 @@ def SB3toSB1(path):
                 
                 for file_results in files_results :
                     
-                    if chr in file_results and cell_type in file_results and resolution in file_results :
+                    # find the good corresponding file to chr,cell_type and results
+                    if chr in file_results and cell_type in file_results and resolution in file_results : 
                         
                         file_df = pd.DataFrame()
                         
-                        lresults = genfromtxt(file_results, delimiter='\n')
-                        file_df["comp"] = lresults
+                        # Transformation into a SB1 type file : chr x start end comp
+                        
+                        lresults = genfromtxt(file_results, delimiter='\n') 
+                        file_df["comp"] = lresults 
                         file_df["chromosome"] = ["chr" for i in range(len(lresults))]
                         file_df["chrnum"] = [chr.replace("chr","") for i in range(len(lresults))]
+                        
+                        #According to resolution, create the start and end bins
+                        
                         if resolution == "100kb" :
                             file_df["start"] = [100000.0*x for x in file_df.index.tolist()]
                         else :
@@ -71,12 +79,16 @@ def SB3toSB1(path):
                         else :
                             file_df["end"] = [25000.0*(x+1) for x in file_df.index.tolist()]
                         
+                        #Append to a list the dataframe corresponding to the chromosome
+                        
                         file_df_copy = file_df.copy()
                         file_df_copy = file_df_copy[["chromosome","chrnum","start","end","comp"]]
                         file_df_copy.comp[file_df.comp == 0.0] = -1.0
                         file_df_copy.comp[file_df.comp == -1.0] = 0.0
                         list_df.append(file_df_copy)
-                        
+               
+            #Concatenate all the dataframes with chromosomes of the same cell type
+            
             res_df = pd.concat(list_df)
             res_df = res_df.sort_values(by = ["chrnum","start"])
             filename = os.path.join(path_parent,"SB3_converted_SB1",cell_type + "_" + resolution + "_COMPARTMENT" )
