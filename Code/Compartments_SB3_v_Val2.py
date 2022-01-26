@@ -47,16 +47,35 @@ def filteramat_Val(Hicmat,Filterextremum=True,factor=1.5):
     out : the HiCmatreduce,thevector of his transformation
     THE filter part from the main in one function
     """
+
+        
     Hicmatreduce=Hicmat
+    
+    A_0 = []
+    for i in range(np.shape(Hicmat)[0]):
+        if np.sum(Hicmat[i,:]) > 0:
+            A_0.append(i)
+    
+    Hicmatreduce=Hicmatreduce[A_0,:]
+    
+    A_1 = []
+    for j in range(np.shape(Hicmat)[1]):
+        if np.sum(Hicmat[:,j]) > 0:
+            A_1.append(j)
+    
+    Hicmatreduce=Hicmatreduce[:,A_1]
+
+
     #first step : filter empty bin
-    sumHicmat0= Hicmat.sum(axis = 0)
+    sumHicmat0= Hicmatreduce.sum(axis = 0)
     segmenter0=sumHicmat0 > 0
     A_0 =np.where(segmenter0)
     Hicmatreduce=Hicmatreduce[:,A_0[1]]
 
-    sumHicmat1 = Hicmat.sum(axis = 1)
+    sumHicmat1 = Hicmatreduce.sum(axis = 1)
     segmenter1 = sumHicmat1 > 0
     A_1 = np.where(segmenter1)
+    
     Hicmatreduce=Hicmatreduce[A_1[0],:]
 
     if Filterextremum:
@@ -83,10 +102,11 @@ def filteramat_Val(Hicmat,Filterextremum=True,factor=1.5):
         newcond21=sumHicmat_1 < maxi1
         newcond1=np.logical_and(newcond1,newcond21)
         B1=np.where(newcond1)
-
+        
         #Filter
         Hicmatreduce=Hicmatreduce[:,B0[1]]
         Hicmatreduce=Hicmatreduce[B1[0],:]
+        
         segmenter0=A_0[1][B0[1]] #Create the binsaved index for first chromosome
         segmenter1=A_1[0][B1[0]] #Create the binsaved index for second chromosome
     return Hicmatreduce,segmenter0,segmenter1
@@ -107,6 +127,8 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
     A=np.concatenate((A,np.transpose(np.array([A[:,1],A[:,0],A[:,2]]))), axis=0)#build array at pb resolution
     A = sparse.coo_matrix( (A[:,2], (A[:,0],A[:,1])))
     binned_map=HiCtoolbox.bin2d(A,R,R) #!become csr sparse array
+    
+
     LENTEST=np.shape(A)[0]
     print('Resolution after binning : ',np.shape(binned_map))
         
@@ -428,6 +450,8 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     print('Input data shape A post coo_matrix : ',np.shape(A))
     binned_map=HiCtoolbox.bin2d(A,R,R) #!become csr sparse array
     LENTEST=np.shape(A)[0]
+
+
     print('Input at the good resolution (binned map) : ',np.shape(binned_map))
 #    print(binned_map)
 #    print(type(binned_map))
@@ -439,11 +463,13 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
 
     #filtered_mat, binsaved = HiCtoolbox.filteramat(binned_map)
     
+    
     filtered_mat, binsaved_Y, binsaved_X = filteramat_Val(binned_map)
 
     # --------------------------------------------------------------------------
     
     print('Input at the good resolution (filtered map) : ',np.shape(filtered_mat))
+
     
     ## Apply the SCN to the matrix
 
@@ -451,8 +477,9 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     ### MODIFICATION VAL : SCN gérant les matrices non carrées
 
     #binned_map_scn = HiCtoolbox.SCN(filtered_mat)
-
+    
     binned_map_scn = SCN_Val(filtered_mat)
+    
     # --------------------------------------------------------------------------
         
     print('Input at the good resolution after SCN : ',np.shape(binned_map_scn))
@@ -503,8 +530,8 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     # --------------------------------------------------------------------------
 
     print("Transformation into OE matrix :",np.shape(oe_mat))
-#    print("NaN in matrix :",np.isnan(oe_mat).any())
-#    print("Inf in matrix :",np.isinf(oe_mat).any())
+    print("NaN in matrix :",np.isnan(oe_mat).any())
+    print("Inf in matrix :",np.isinf(oe_mat).any())
     
     hm_oe = sns.heatmap(
         oe_mat, 
@@ -538,7 +565,6 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
 
     corr_1 = np.corrcoef(oe_mat)
     corr_2 = np.corrcoef(oe_mat,rowvar = False)
-    
     hm_corr_1 = sns.heatmap(corr_1, vmin = -0.1, vmax = 0.1, cmap= "coolwarm",square=False)  
     fig = hm_corr_1.get_figure()
     corr_heatmap_1 = HiCfile.replace(".RAWobserved","_corr_heatmap_"+str(num_chr_1)+".png")
@@ -555,10 +581,14 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     # --------------------------------------------------------------------------
 
     print("Computation of Correlation Matrices :",np.shape(corr_1),'/',np.shape(corr_2))
-#    print("NaN in matrix 1 :",np.isnan(corr_1).any())
-#    print("Inf in matrix 1 :",np.isinf(corr_1).any())
-#    print("NaN in matrix 2 :",np.isnan(corr_2).any())
-#    print("Inf in matrix 2 :",np.isinf(corr_2).any())
+    print("NaN in matrix 1 :",np.isnan(corr_1).any())
+    if np.isnan(corr_1).any() :
+        corr_1[np.isnan(corr_1)] = 0
+    print("Inf in matrix 1 :",np.isinf(corr_1).any())
+    print("NaN in matrix 2 :",np.isnan(corr_2).any())
+    if np.isnan(corr_2).any() :
+        corr_2[np.isnan(corr_2)] = 0
+    print("Inf in matrix 2 :",np.isinf(corr_2).any())
     
     ## Get the svd decomposition
 
@@ -696,9 +726,7 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
 
     print("Find the compartments with HMM")
 
-    print(len(binsaved_X))
     list_filtered1 = [i for i in range(1,np.shape(binned_map)[0]) if i not in binsaved_X ]
-    print(len(list_filtered1))
     list_filtered2 = [i for i in range(1,np.shape(binned_map)[1]) if i not in binsaved_Y ]
     
     
@@ -731,7 +759,6 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
                 list_compartments1.append(0.0)
                 
   
-    print(len(list_filtered1))
     for x in list_filtered1 :
         list_compartments1.insert(x-1,-1.0)
     
@@ -793,9 +820,9 @@ if mode == "intra" :
 if mode == "inter" :
 
     resolution = 100000
-    HiC_fic = "chr16_17_100kb.RAWobserved"
-    geneDen_fic_1 = "chr16.hdf5"
-    geneDen_fic_2 = "chr17.hdf5"
+    HiC_fic = "chr1_5_100kb.RAWobserved"
+    geneDen_fic_1 = "chr1.hdf5"
+    geneDen_fic_2 = "chr5.hdf5"
 
     pipeline_inter(resolution,HiC_fic,geneDen_fic_1,geneDen_fic_2)
 
