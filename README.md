@@ -7,7 +7,7 @@ We decided to work on ***topic B : Chromosome compartments !!***
 The aim of our group is to tackle chromosome compartments, first by seing what compartments can be identified within a chromosom and then between chromosoms.
 
 
-Most of the pipeline is taken from Leopold Carron in that link :
+Most of the pipeline is taken from Leopold Carron in files [HiCToolBox](Code/HiCToolBox.py) and [main](Code/main.py) 
 
 
 Nos data : http://www.lcqb.upmc.fr/meetu/dataforstudent/
