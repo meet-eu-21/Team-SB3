@@ -1,18 +1,14 @@
 # Team-SB3
 
-Meet-EU Team SB3
+Welcome to Meet-EU Team SB3 (Sorbonne University) team !
 
-Topic B : Chromosome compartments
+We decided to work on ***topic B : Chromosome compartments !!***
 
 The aim of our group is to tackle chromosome compartments, first by seing what compartments can be identified within a chromosom and then between chromosoms.
 
-First part : intra chromosomal compartments.
 
 Most of the pipeline is taken from Leopold Carron in that link :
 
-To sum it up it is composed as follow :
-
-  - 
 
 Nos data : http://www.lcqb.upmc.fr/meetu/dataforstudent/
 
@@ -30,10 +26,10 @@ What will be explained here is the study of interchromosomic data (i.e., study o
 
 ### To run the code :
 At the bottom end of the script, you'll find several variables to caliber before running the code :
-    • A string variable mode which you can caliber to "inter" or "intra". This variable allows the script to launch the corresponding study (interchromosomic for "inter" and intrachromosomal for "intra"). For each of these modes, you can caliber the following variables independently from the other mode.
-    • An integer variable resolution which has to be the resolution of your HiC data.
-    • A string variable HiC_fic which is the name of your HiC data file.
-    • One or two string variables depending of the chosen mode. The intrachromosomal mode has the geneDen_fic variable which is the name of the Gene Density file associated to your sole studied chromosome. The interchromosomic mode has the geneDen_fic_1 and geneDen_fic_2 variables which are the names of the Gene Density files associated to your two studied chromosome. IMPORTANT : The Gene Density files have to be given in the same order than the chromosomes are arranged in the HiC data file name.
+- A string variable mode which you can caliber to "inter" or "intra". This variable allows the script to launch the corresponding study (interchromosomic for "inter" and intrachromosomal for "intra"). For each of these modes, you can caliber the following variables independently from the other mode.
+-  An integer variable resolution which has to be the resolution of your HiC data.
+-  A string variable HiC_fic which is the name of your HiC data file.
+-   One or two string variables depending of the chosen mode. The intrachromosomal mode has the geneDen_fic variable which is the name of the Gene Density file associated to your sole studied chromosome. The interchromosomic mode has the geneDen_fic_1 and geneDen_fic_2 variables which are the names of the Gene Density files associated to your two studied chromosome. IMPORTANT : The Gene Density files have to be given in the same order than the chromosomes are arranged in the HiC data file name.
 Once you have calibrated those variables, you can run the code which will execute the corresponding pipeline on the given files at the given resolution.
 
 
@@ -62,3 +58,9 @@ However, the data processing for all of this stay the same as in the intrachromo
 
 Our adaptation of the intrachromosomal study to the interchromosomic case ends here.
 Technically speaking, the original code has a last step in which it generates a .pdb file. This step has not been adapted yet in our code, that is why it is overlooked during the code's execution by being between quotation marks. But the procedure is the same as it is for intrachromosomal study. 
+
+## Compartments evaluation to gold standards : 
+
+## Collaborative work with team SB1 (Sorbonne University) : 
+
+## Launching our code on the IFB cluster : 
