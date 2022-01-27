@@ -10,7 +10,7 @@ The aim of our group is to tackle chromosome compartments, first by seing what c
 Most of the pipeline is taken from Leopold Carron in files [HiCToolBox](Code/HiCToolBox.py) and [main](Code/main.py) 
 
 
-Nos data : http://www.lcqb.upmc.fr/meetu/dataforstudent/
+All the HiC data, compartment gold standards and gene density files are taken from this repository : http://www.lcqb.upmc.fr/meetu/dataforstudent/
 
 # Tutorial : how to use our code to get compartments and compare it to gold standards, featuring IFB cluster !
 
