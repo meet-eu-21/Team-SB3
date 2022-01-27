@@ -7,7 +7,7 @@ We decided to work on ***topic B : Chromosome compartments !!***
 The aim of our group is to tackle chromosome compartments, first by seing what compartments can be identified within a chromosom and then between chromosoms.
 
 
-Most of the pipeline is taken from Leopold Carron in files [HiCToolBox](Code/HiCToolBox.py) and [main](Code/main.py) 
+Most of the pipeline is taken from Leopold Carron in files [HiCToolBox](Code/HiCtoolBox.py) and [main](Code/main.py) 
 
 
 All the HiC data, compartment gold standards and gene density files are taken from this repository : http://www.lcqb.upmc.fr/meetu/dataforstudent/
@@ -18,7 +18,7 @@ This present tutorial aims at helping you use our code. It covers all the steps 
 
 ## HiC contact maps reading and compartment generation
 
-This covers how to use "Compartment_SB3_v2.py" that you can find in the main branch
+This covers how to use [Compartments_SB3_v_Val2.py](Code/Compartments_SB3_v_Val2.py) that you can find in the main branch
 
 ### A brief summary of this script : 
 The purpose of this code is to find DNA compartments by analysis of HiC contact maps and Gene Density data. The code is operational for the study of intrachromosomal data (i.e., study of a single chromosome in contact with itself) as this part was designed by Leopold Carron and his team. As a consequence, this part will not be explained here.
