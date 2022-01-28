@@ -23,66 +23,124 @@ from pathlib import Path
 
 ## Relu function is needed to plot eigenvector
 def relu(x) :
+    """
+    Apply the relu function, i.e 0 if x is negative and x else.
+    
+    Keyword arguments :
+    x -- the number or array to apply the function Relu
+    
+    Returns :
+    
+    the number or array modified
+    """
+    
     return np.maximum(x,np.zeros(len(x)))
 
 def relumin(x) :
+    
+    """
+    Apply the negative version of relu function, i.e 0 if x is positive and x else.
+    
+    Keyword arguments :
+    x -- the number or array to apply the function relumin
+    
+    Returns :
+    
+    the number or array modified
+    """
+    
     return np.minimum(x,np.zeros(len(x)))
 
 def SCN_Val(D, max_iter = 10):
     mat = np.float64(D.toarray())
+    
     """
-    Out  : SCN(D)
-    Code version from Vincent Matthys
+    A different version of SCN found in HiCtoolbox. Take a 2D array and apply the SCN transform on it.
+    We do not make the matrix symetric at the end because it is rectangular
+    
+    
+    Keyword arguments :
+    D -- the 2D array to be transformed
+    max_iter : the number of times you want to apply the SCN transform on your matrix
+    
+    Returns :
+    
+    mat -- transformed matrix
     """
     # Iteration over max_iter
     for i in range(max_iter):
         mat /= np.maximum(1, mat.sum(axis = 0))
         mat /= np.maximum(1, mat.sum(axis = 1)[:,None])
-    # To make matrix symetric again
     return mat
 
 def filteramat_Val(Hicmat,Filterextremum=True,factor=1.5):
     """
-    in : a HiCmat without any transformation, factor of reduction
-    out : the HiCmatreduce,thevector of his transformation
-    THE filter part from the main in one function
+    A different version of filteramat function in HiCtoolbox, adapted for interchromosomal contact (rectangle matrix)
+    Take a 2D array and apply a filter on it.
+    It filters lines and columns with a 0 sum, and line and columns with a sum over mean + std*factor
+    
+    
+    Keyword arguments :
+    Hicmat -- the 2D array to be filtered
+    Filterextremum -- boolean, by defaut on True to check if you want to filter extremums.
+    factor -- double , parameter which defines bounds of the filter
+    
+    Returns :
+    
+    Hicmatreduce -- filtered matrix
+    segmenter0 -- list of saved bin for first chromosome (in x axis)
+    segmenter1 -- list of saved bins for second chromosome (y axis)
+    
     """
-
         
     Hicmatreduce=Hicmat
+    
+    ##Filter lines and columns whose sum is 0
     
     A_0 = []
     for i in range(np.shape(Hicmat)[0]):
         if np.sum(Hicmat[i,:]) > 0:
             A_0.append(i)
     
-    Hicmatreduce=Hicmatreduce[A_0,:]
+    # Filter the lines contained in A_0
+    Hicmatreduce=Hicmatreduce[A_0,:] 
     
     A_1 = []
     for j in range(np.shape(Hicmat)[1]):
         if np.sum(Hicmat[:,j]) > 0:
             A_1.append(j)
     
+    # Filter the columns contained in A_0
+
     Hicmatreduce=Hicmatreduce[:,A_1]
 
+    ##Filter lines and columns whose sum is 0 again, to be sure.
 
-    #first step : filter empty bin
     sumHicmat0= Hicmatreduce.sum(axis = 0)
     segmenter0=sumHicmat0 > 0
     A_0 =np.where(segmenter0)
+    
+    # Filter the lines contained in A_0
+
     Hicmatreduce=Hicmatreduce[:,A_0[1]]
 
     sumHicmat1 = Hicmatreduce.sum(axis = 1)
     segmenter1 = sumHicmat1 > 0
     A_1 = np.where(segmenter1)
     
+    # Filter the columns contained in A_0
+
     Hicmatreduce=Hicmatreduce[A_1[0],:]
 
+    # If you want to filter :
+    
     if Filterextremum:
         #second step : filter lower bin for first chromosome
         sumHicmat_0=np.sum(Hicmatreduce,axis=0)
         msum0=np.mean(sumHicmat_0)
         mstd0=np.std(sumHicmat_0)
+        #get mean and standard deviation of sums
+
         mini0 = msum0-mstd0*factor
         maxi0 = msum0+mstd0*factor
         #Make the bolean condition
@@ -93,6 +151,7 @@ def filteramat_Val(Hicmat,Filterextremum=True,factor=1.5):
 
         #third step : filter lower bin for second chromosome
         sumHicmat_1=np.sum(Hicmatreduce,axis = 1)
+        #get mean and standard deviation of sums
         msum1=np.mean(sumHicmat_1)
         mstd1=np.std(sumHicmat_1)
         mini1 = msum1-mstd1*factor
@@ -111,10 +170,26 @@ def filteramat_Val(Hicmat,Filterextremum=True,factor=1.5):
         segmenter1=A_1[0][B1[0]] #Create the binsaved index for second chromosome
     return Hicmatreduce,segmenter0,segmenter1
 
-###  Pipeline Intrachromosomique --------------------------------------------------------------------
+###  Intrachromosomal Pipeline  --------------------------------------------------------------------
 def pipeline_intra(R,HiCfile,gene_density_file) :
 
-    alpha=0.227
+    """
+    A pipeline for generating intrachromosomal compartments. Mainly inspired by Leopold Carron    
+    
+    Keyword arguments :
+    R -- integer, the resolution of the file
+    HiCfile -- path, the relative path of the HiCfile you want to get the compartments from
+    density_file -- path , density file corresponding to our HiCfile chromosome
+    
+    Returns :
+    
+    None
+    
+    Save figures in Results_local folder created at the working directory
+    
+    """
+    
+    alpha=0.227 #Useful for pdb generation
     HiCfilename= HiCfile # matrix containing the contact Hi-C
     
     #Build matrix
@@ -128,8 +203,6 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
     A = sparse.coo_matrix( (A[:,2], (A[:,0],A[:,1])))
     binned_map=HiCtoolbox.bin2d(A,R,R) #!become csr sparse array
     
-
-    LENTEST=np.shape(A)[0]
     print('Resolution after binning : ',np.shape(binned_map))
         
     ##Filter the matrix
@@ -157,15 +230,17 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
         norm = LogNorm()
     )
     
-    ### Path of my own folder in cluster ##
+    ### Path of my own results folder ##
     
-    save_path = "/shared/projects/form_2021_21/SB3/"
-    
-    
+    save_path = os.path.join(os.getcwd(),"Results_local")
     
     
+    
+    ## Create the name of the heatmap file 
     heatmap = HiCfile.replace(".RAWobserved","_heatmap.png")
-    heatmap = heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    heatmap = os.path.join(save_path,heatmap)
+    
+    ## Save the file
     filename =os.path.basename(heatmap)
     directory = heatmap.replace(filename,"")
     Path(directory).mkdir(parents=True, exist_ok=True)
@@ -176,8 +251,8 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
     
     ## Transform the matrix into the OE  matrix.
     
-    oe_mat = binned_map_scn.copy()
-    n = np.shape(oe_mat)[0]
+    oe_mat = binned_map_scn.copy() #A copy of SCN generated file
+    n = np.shape(oe_mat)[0] #Symetrical matrix
     list_diagonals_mean = [np.mean(oe_mat.diagonal(i)) for i in range(-n+1,n)]
     
     for i in range(n):
@@ -187,7 +262,8 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
             else :       
                 oe_mat[i,j] /= list_diagonals_mean[j-i+n-1]
     
-        
+    ## Generate a heatmap of the oe matrix
+    
     hm_oe = sns.heatmap(
         oe_mat, 
         cmap= "coolwarm",
@@ -195,8 +271,9 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
         norm = LogNorm()
     )  
     
+    ## Get the filename of the file
     oe_heatmap = HiCfile.replace(".RAWobserved","_oe_heatmap.png")
-    oe_heatmap = oe_heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    oe_heatmap = os.path.join(save_path,oe_heatmap)
   
     fig = hm_oe.get_figure()
     fig.savefig(oe_heatmap,dpi = 400)
@@ -205,7 +282,9 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
     
     ## Let us compute the correlation matrix
     
-    corr = np.corrcoef(oe_mat)
+    corr = np.corrcoef(oe_mat) #Correlation matrix in numpy format
+    
+    ## Correlation matrix heatmap style
     hm_corr = sns.heatmap(
         corr,
         vmin = -0.1, vmax = 0.1,
@@ -215,8 +294,10 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
         
     fig = hm_corr.get_figure()
     
+    ## Get the filename and save it
+    
     corr_heatmap = HiCfile.replace(".RAWobserved","_corr_heatmap.png")
-    corr_heatmap = corr_heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    corr_heatmap = os.path.join(save_path,corr_heatmap)
  
     fig.savefig(corr_heatmap,dpi = 400)
     
@@ -230,12 +311,16 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
     pca.fit(corr)
     
 
+    ## Get the first eigenvector
     
     s_vector = pca.components_[0]
+    
+    ## Turn it into a list
     list_vector = list(s_vector)
     
+    ## Get the name of eigenvector files
     vfile = HiCfile.replace(".RAWobserved","_vp.txt")
-    vfile = vfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    vfile = os.path.join(save_path,vfile)
 
     ## Write the corresponding eigenvector in a file 
 
@@ -249,23 +334,21 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
         for x in list_vector :
             f.write(str(x) + "\n")
     
-    
-   
-
-    
-
-        
+    ## Open the gene density file
+         
     f = h5py.File(gene_density_file, 'r')
     data_name = list(f.keys())[0]
     dset = f[data_name]
     data = dset[...]
 
-    positive = True
+    ## Check which compartments are euchromatin or heterochromatin based on their density.
+    
+    positive = True # A = dense and B = not dense
     if np.sum( data[np.where(s_vector>0)]) < np.sum( data[np.where(s_vector<0)]) :
-        positive = False
+        positive = False # A = not dense and B = dense
 
     compfile = HiCfile.replace(".RAWobserved","_comp.txt")
-    compfile = compfile.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    compfile = os.path.join(save_path,compfile)
 
     ## Write the comps
     ## Do the HMM analysis
@@ -277,6 +360,8 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
     Z2 = remodel.predict(corr)
     list_compartments = []
     
+    ## If positive scenario, write 1.0 for A compartment and 0.0 for B
+    
     if positive :
         for i in range(len(Z2)) :
             if Z2[i] == 0 :
@@ -284,6 +369,8 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
             if Z2[i] == 1 :
                 list_compartments.append(1.0)
     
+    ## Do the opposite for negative scenario, write 1.0 for B compartment and 0.0 for A
+
     else :
         for i in range(len(Z2)) :
             if Z2[i] == 0 :
@@ -291,16 +378,18 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
             if Z2[i] == 1 :
                 list_compartments.append(0.0)
   
+    ## Insert filtered bins as -1.0
     
     for x in list_filtered :
         list_compartments.insert(x-1,-1.0)
     
+    ## Write the file
 
     with open(compfile,'w') as f :
         for x in list_compartments :
             f.write(str(x) + "\n")
     
-    z2 = np.zeros(len(s_vector))
+    ## Plot the first eigenvector and save it
     
     plt.plot(np.arange(len(s_vector)), s_vector)
     plt.xlabel("Index of the vector")
@@ -330,46 +419,17 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
         plt.legend()
 
     nameplot = HiCfile.replace(".RAWobserved","_compartments.png")
-    nameplot = nameplot.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    nameplot = os.path.join(save_path,nameplot)
     
     plt.savefig(nameplot)
     plt.close()
     
-    """
-        #Build color annotation at desired resolution
-    color=pd.read_csv(EpiGfilename,delimiter='\t',header=None,names=[1,2,3,4]) ### 4 columns 
-    color=color[color[1]=='chr16']#take only chr of interest
-    number=color[4].max() #number of color in the file
-    color_vec=np.zeros((LENTEST,number+1)) #build array at pb resolution LENchr * number of color
-    i=0
-    while i<np.shape(color)[0]:
-    	color_vec[color[2].iloc[i]:color[3].iloc[i],color[4].iloc[i]]=1 ## iloc = gets the row
-    	i+=1
-        
-    # At the end you get for each bp the epimark associated with a 1 at the column corresponding.
-    # For ex, if the epi mark is 15 at bp 1000, the 1000th row has a 1 on the 16th column and 0 elsewhere.
-      
-    
-    color_bins=HiCtoolbox.bin2d(color_vec,R,1) ## keep 16 epimarks at col but is binned with given resolution
-    color_bins=color_bins/np.amax(color_bins) ##To normalize
-    
-    #The score corresponding to the "density" of each epiGmark"
-    print('Bp cover by this mark, has to be >0 :',np.sum(color_bins[:,selectedmark]) )
-    
-    """
-    
 
+    #Creation of the 3D structure of the chromosome.
     
-    """
-    ## Change our previous color_bins to get only the bins corresponding to filtered map and the column associated with our epiGmark selected
-    color2=color_bins[binsaved[1]] #filter the epi by removed bin in HiC
-    color2=color2[:,selectedmark] #now color2 is 1D
-    color2=np.float64(color2.todense()) #type issue
-    """
-    #3D
     print('3D')#Here : sparse int64
-    contact_map=HiCtoolbox.SCN(filtered_mat.copy())
-    contact_map[contact_map==0] = 0.000000001
+    contact_map=HiCtoolbox.SCN(filtered_mat.copy()) ## Re-apply SCN
+    contact_map[contact_map==0] = 0.000000001 ## To avoid infinite error during fast floyd
     contact_map=np.asarray(contact_map)**alpha #now we are not sparse at all
     
     print("begin fast floyd")
@@ -380,21 +440,12 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
     
 
     
-    #MDS
+    #MDS to generate 3D coordinates from the distance matrix
     embedding = MDS(n_components=3)#LOAD the MDS #With scikit-learn mds
     XYZ = embedding.fit_transform(dist_matrix) #Make the transform
     print("MDS transform done")
-    #XYZ=np.float64(XYZ)
-    #XYZ,E=HiCtoolbox.sammon(dist_matrix, 3)#with the one from tom j pollard
-    
-    #print("Sammon done")
-    
-    """
-    print("Output shape : ",np.shape(XYZ),np.shape(color2))
-    
-    
-    """
-    
+
+    ## For the pdb file, put A and B as alternate locations for each Carbon    
     
     if positive :
         list_compartments = np.where(s_vector > 0,"A","B")
@@ -411,24 +462,48 @@ def pipeline_intra(R,HiCfile,gene_density_file) :
     print("ConvexHull done")
     XYZ=XYZ*scale
     
+    ## Save the pdb file
+    
     pdbfilename  = HiCfile.replace(".RAWobserved","_3D.pdb")
-    pdbfilename = pdbfilename.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    pdbfilename = os.path.join(save_path,pdbfilename)
     HiCtoolbox.writePDB(pdbfilename,XYZ,list_compartments)
     print("PDB written")
 
 
-###  Pipeline Interchromosomique --------------------------------------------------------------------
+###  Interchromosomal pipeline --------------------------------------------------------------------
     
 def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
+    
+    """
+    A pipeline for generating interchromosomal compartments. Mainly inspired by intra version    
+    
+    Keyword arguments :
+    R -- integer, the resolution of the file
+    HiCfile -- path, the relative path of the HiCfile you want to get the compartments from
+    density_file_1 -- path , density file corresponding to our HiCfile first chromosome (in order of apparition)
+    density_file_2 -- path , density file corresponding to our HiCfile second chromosome (in order of apparition)
 
-    alpha=0.227
+    
+    Returns :
+    
+    None
+    
+    Save figures in Results_local folder created at the working directory
+
+    
+    """
+
     HiCfilename= HiCfile # matrix containing the contact Hi-C
-    GDfilename_1 = gene_density_file_1
-    GDfilename_2 = gene_density_file_2
+    GDfilename_1 = gene_density_file_1 ## A short for the first gene density file
+    GDfilename_2 = gene_density_file_2 ## A short for the second gene density file
+    
+    ## Get the ID of each chromosome :
+    
     num_chr_1 = GDfilename_1.split('chr')[1].split('.')[0]
     num_chr_2 = GDfilename_2.split('chr')[1].split('.')[0]
     
-    #Build matrix
+    #Build matrix : 
+    
     A=np.loadtxt(HiCfilename) #Load the matrix
     A=np.int_(A) #To int
     print('Input data shape A : ',np.shape(A)) # Nombre de lignes * nombre de colonnes du fichier HiCfilename
@@ -436,32 +511,23 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     ## Bin the matrix
 
     # --------------------------------------------------------------------------
-    ### MODIFICATION VAL : On ne concatène pas la matrice A et sa transposée car :
-    ###     1) Ça force une nature carrée de la matrice alors que les chromosomes ne sont pas forcément de même longueur
-    ###     2) Il y a ambigüité des données lorsque deux couples complémentaires de coordonnées n'ont pas la même valeur
-    ###         (ex: si les coords (0,1)=5 et (1,0)=10, la concaténation des transposées crééra
-    ###                 des coords (1,0)=5 et (0,1)=10 pour la matrice finale)
+    ### MODIFICATION from VAL : No concatenation of A and its transposition because it forces a square matrix :
+   
     
-    #A=np.concatenate((A,np.transpose(np.array([A[:,1],A[:,0],A[:,2]]))), axis=0)#build array at pb resolution
-    #print('Input data shape A post concatene : ',np.shape(A))
-    #print(A)
     # --------------------------------------------------------------------------
     A = sparse.coo_matrix( (A[:,2], (A[:,0],A[:,1])))
     print('Input data shape A post coo_matrix : ',np.shape(A))
     binned_map=HiCtoolbox.bin2d(A,R,R) #!become csr sparse array
-    LENTEST=np.shape(A)[0]
 
-
+    
+    ## Check the resolution of the binned map
+    
     print('Input at the good resolution (binned map) : ',np.shape(binned_map))
-#    print(binned_map)
-#    print(type(binned_map))
         
     ##Filter the matrix
 
     # --------------------------------------------------------------------------
-    ### MODIFICATION VAL : Nouveau filtrage gérant les matrices non carrées
-
-    #filtered_mat, binsaved = HiCtoolbox.filteramat(binned_map)
+    ### MODIFICATION VAL : A new filtration method
     
     
     filtered_mat, binsaved_Y, binsaved_X = filteramat_Val(binned_map)
@@ -474,21 +540,16 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     ## Apply the SCN to the matrix
 
     # --------------------------------------------------------------------------
-    ### MODIFICATION VAL : SCN gérant les matrices non carrées
-
-    #binned_map_scn = HiCtoolbox.SCN(filtered_mat)
+    ### MODIFICATION VAL : SCN handling rectangle matrices
     
     binned_map_scn = SCN_Val(filtered_mat)
     
     # --------------------------------------------------------------------------
         
     print('Input at the good resolution after SCN : ',np.shape(binned_map_scn))
-#    print("NaN in matrix :",np.isnan(binned_map_scn).any())
-#    print("Inf in matrix :",np.isinf(binned_map_scn).any())
-#    print(binned_map_scn)
     
     ## Let us see a heatmap corresponding to the SCN binned_map :
-    """
+    
     
     hm_scn = sns.heatmap(
         binned_map_scn, 
@@ -496,32 +557,40 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
         square=False,
         norm = LogNorm()
     )
-    """
-    ### Path of my own folder in cluster ##
     
-    save_path = "/shared/home/apauron/"
-    """
+    ### Path of our results folder ##
+    
+    save_path = os.path.joint(os.getcwd(),"Results_local")
+        
+    ## Prepare file name of SCN matrix and save it
     heatmap = HiCfile.replace(".RAWobserved","_heatmap.png")
-    heatmap = heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    heatmap = os.path.join(save_path,heatmap)
+    
+    ## Name without full path
     filename =os.path.basename(heatmap)
     directory = heatmap.replace(filename,"")
+    
+    ## Create directories if they do not exist
     Path(directory).mkdir(parents=True, exist_ok=True)
     fig = hm_scn.get_figure()
     fig.savefig(heatmap,dpi = 400)
     
     plt.close()
-    """
+    
     ## Transform the matrix into the OE  matrix.
     
     # --------------------------------------------------------------------------
-    ### MODIFICATION VAL : Création d'une OE matrix non carrée
+    ### MODIFICATION VAL : Creation of rectangle OE matrix
+    
     oe_mat = binned_map_scn.copy()
-    #n = np.shape(oe_mat)[0]
+    
+    #Rectangle matrix
     n,m = np.shape(oe_mat)
-    #list_diagonals_mean = [np.mean(oe_mat.diagonal(i)) for i in range(-n+1,n)]
+    
     list_diagonals_mean = [np.mean(oe_mat.diagonal(i)) for i in range(-n+1,m)]
+    
+    ## Iteration on lines and columns
     for i in range(n):
-        #for j in range(n) :
         for j in range(m) :
             if list_diagonals_mean[j-i+n-1] == 0 :
                 oe_mat[i,j] = 0
@@ -529,10 +598,8 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
                 oe_mat[i,j] /= list_diagonals_mean[j-i+n-1]
     # --------------------------------------------------------------------------
 
-    print("Transformation into OE matrix :",np.shape(oe_mat))
-    print("NaN in matrix :",np.isnan(oe_mat).any())
-    print("Inf in matrix :",np.isinf(oe_mat).any())
-    """
+    ## Let us see a heatmap corresponding to the OE binned_map :
+
     hm_oe = sns.heatmap(
         oe_mat, 
         cmap= "coolwarm",
@@ -540,87 +607,83 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
         norm = LogNorm()
     )  
     
+    ## Prepare the file and save it 
+    
     oe_heatmap = HiCfile.replace(".RAWobserved","_oe_heatmap.png")
-    oe_heatmap = oe_heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    oe_heatmap = os.path.join(save_path,oe_heatmap)
   
     fig = hm_oe.get_figure()
     fig.savefig(oe_heatmap,dpi = 400)
     
     plt.close()
-    """
+    
     ## Let us compute the correlation matrix
 
     # --------------------------------------------------------------------------
-    ### MODIFICATION VAL : Calcul de deux matrices de corrélation (forcément carrées),
-    ###                     Une pour la OE_map et une pour sa transposée
+    ### MODIFICATION VAL : 
+    # Two correlation matrices are computed : one for chromosome 1 and the other for chromosome 2
     
-    #corr = np.corrcoef(oe_mat)
-    
-    #hm_corr = sns.heatmap(corr, vmin = -0.1, vmax = 0.1, cmap= "coolwarm",square=False)  
-    #fig = hm_corr.get_figure()
-    #corr_heatmap = HiCfile.replace(".RAWobserved","_corr_heatmap.png")
-    #corr_heatmap = corr_heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
-    #fig.savefig(corr_heatmap,dpi = 400)
-    #plt.close()
 
     
     corr_1 = np.corrcoef(oe_mat)
+    ## Apply correlation on transposed matrix
     corr_2 = np.corrcoef(oe_mat,rowvar = False)
-    """
+    
+    ## Save first correlation matrix as a figure
     hm_corr_1 = sns.heatmap(corr_1, vmin = -0.1, vmax = 0.1, cmap= "coolwarm",square=False)  
     fig = hm_corr_1.get_figure()
-    """
+    
     corr_heatmap_1 = HiCfile.replace(".RAWobserved","_corr_heatmap_"+str(num_chr_1)+".csv")
-    corr_heatmap_1 = corr_heatmap_1.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
-    """
+    corr_heatmap_1 = os.path.join(save_path,corr_heatmap_1)
+    
     fig.savefig(corr_heatmap_1,dpi = 400)
     plt.close()
-    """
-    """
+    
+    ## Save second one as a figure 
     hm_corr_2 = sns.heatmap(corr_2, vmin = -0.1, vmax = 0.1, cmap= "coolwarm",square=False)  
     fig = hm_corr_2.get_figure()
-    """
+    
     corr_heatmap_2 = HiCfile.replace(".RAWobserved","_corr_heatmap_"+str(num_chr_2)+".csv")
-    corr_heatmap_2 = corr_heatmap_2.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
-    """
+    corr_heatmap_1 = os.path.join(save_path,corr_heatmap_2)
+    
     fig.savefig(corr_heatmap_2,dpi = 400)
     plt.close()
-    """
+    
     # --------------------------------------------------------------------------
 
     print("Computation of Correlation Matrices :",np.shape(corr_1),'/',np.shape(corr_2))
-    print("NaN in matrix 1 :",np.isnan(corr_1).any())
+    ## Nan error can happen, meaning a correlation of 0.
     if np.isnan(corr_1).any() :
         corr_1[np.isnan(corr_1)] = 0
-    print("Inf in matrix 1 :",np.isinf(corr_1).any())
-    print("NaN in matrix 2 :",np.isnan(corr_2).any())
+
     if np.isnan(corr_2).any() :
         corr_2[np.isnan(corr_2)] = 0
-    print("Inf in matrix 2 :",np.isinf(corr_2).any())
-    np.savetxt(corr_heatmap_1,corr_1)
-    np.savetxt(corr_heatmap_2,corr_2)
-    """
+        
+    
     ## Get the svd decomposition
 
     # --------------------------------------------------------------------------
-    ### MODIFICATION VAL : Recherche des vecteurs et valeures propres des deux matrices de corrélation.
+    ### MODIFICATION VAL : Instead of one, searching for first eigenvector of the two correlation matrices
     
-    #eigenvalues, eigenvectors = np.linalg.eig(corr)
-    #eigenvectors = np.transpose(eigenvectors)
-    #s_vector = eigenvectors[0]
-
+    # First matrix 
+    
     eigenvalues_1, eigenvectors_1 = np.linalg.eig(corr_1)
     eigenvectors_1 = np.transpose(eigenvectors_1)
     s_vector_1 = eigenvectors_1[0]
 
+    # Second matrix 
+    
     eigenvalues_2, eigenvectors_2 = np.linalg.eig(corr_2)
     eigenvectors_2 = np.transpose(eigenvectors_2)
     s_vector_2 = eigenvectors_2[0]
+    
     # --------------------------------------------------------------------------
     
     print("Computation of eigenvectors :",len(s_vector_1),'/',len(s_vector_2))
 
     ## Gene Density data treatment
+    
+    # For first chromosome
     
     f1 = h5py.File(GDfilename_1, 'r')
     data_name_1 = list(f1.keys())[0]
@@ -629,9 +692,11 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     data_1 = data_1[binsaved_X]
 
     plt.plot(np.arange(len(data_1)),data_1)
-    plt.savefig("gene_density_"+str(num_chr_1)+".png")
+    plt.savefig(save_path + "/gene_density_"+str(num_chr_1)+".png")
     plt.close()
     # --------------
+
+    # For second chromosome
 
     f2 = h5py.File(GDfilename_2, 'r')
     data_name_2 = list(f2.keys())[0]
@@ -640,7 +705,7 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     data_2 = data_2[binsaved_Y]
 
     plt.plot(np.arange(len(data_2)),data_2)
-    plt.savefig("gene_density_"+str(num_chr_2)+".png")
+    plt.savefig(save_path + "/gene_density_"+str(num_chr_2)+".png")
     plt.close()
 
     print("Study the gene densities")
@@ -648,14 +713,16 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     ## Find the compartments
 
     # --------------------------------------------------------------------------
-    ### MODIFICATION VAL : Étude de la positivité des Densité de Gènes de chaque chromosome.
+    ### MODIFICATION VAL : Study of inversion of compartments A and B 
+    
+    ## Positive boolean is based on density of chromosome and affect A and B compartments to euchromatin and heterochromatin
     positive_1 = True
     if np.sum( data_1[np.where(s_vector_1>0)]) < np.sum( data_1[np.where(s_vector_1<0)]) :
         positive_1 = False
 
     print("First Gene Density positivity :",positive_1)
     
-    z2_1 = np.zeros(len(s_vector_1))
+    #Plot first chromosome first eigenvector
     
     plt.plot(np.arange(len(s_vector_1)), s_vector_1)
     plt.xlabel("Index of the vector")
@@ -665,41 +732,51 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     
     if positive_1 :
         plt.plot(np.arange(len(s_vector_1)), relu(s_vector_1),'r')
+        
+        # Fill under the curve to get compartments
+
 
         plt.fill_between(np.arange(len(s_vector_1)), relu(s_vector_1), 0,
                          color='red', label = "Compartment A")
         plt.plot(np.arange(len(s_vector_1)), relumin(s_vector_1),'b')
+        # Fill under the curve to get compartments
 
         plt.fill_between(np.arange(len(s_vector_1)), relumin(s_vector_1), 0,
                          color='blue', label = "Compartment B")
 
         
         plt.legend()
+        
     else :
         plt.plot(np.arange(len(s_vector_1)), relumin(s_vector_1),'r')
+        ## Fill under the curve to get compartments
         plt.fill_between(np.arange(len(s_vector_1)), relumin(s_vector_1), 0,
                          color='red',label = "Compartment A")
         plt.plot(np.arange(len(s_vector_1)), relu(s_vector_1),'b')
+        
+        ## Fill under the curve to get compartments
+
         plt.fill_between(np.arange(len(s_vector_1)), relu(s_vector_1), 0,
                          color='blue',label = "Compartment B")
         plt.legend()
 
+    ## Save the plot
     nameplot = HiCfile.replace(".RAWobserved","_compartments_"+str(num_chr_1)+".png")
-    nameplot = nameplot.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    nameplot = os.path.join(save_path,nameplot)
     
     plt.savefig(nameplot)
     plt.close()
 
     # --------------
 
+    ## Do the same for chromosome 2 
+    
     positive_2 = True
     if np.sum( data_2[np.where(s_vector_2>0)]) < np.sum( data_2[np.where(s_vector_2<0)]) :
         positive_2 = False
 
     print("Second Gene Density positivity :",positive_2)
-    
-    z2_2 = np.zeros(len(s_vector_2))
-    
+        
     plt.plot(np.arange(len(s_vector_2)), s_vector_2)
     plt.xlabel("Index of the vector")
     plt.ylabel("First eigenvector value")
@@ -728,7 +805,7 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
         plt.legend()
 
     nameplot = HiCfile.replace(".RAWobserved","_compartments_"+str(num_chr_2)+".png")
-    nameplot = nameplot.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    nameplot = os.path.join(save_path,nameplot)
     
     plt.savefig(nameplot)
     plt.close()
@@ -736,21 +813,27 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
 
     print("Find the compartments with HMM")
 
+    ## Get the filtered bins for chr 1 and 2 
+    
     list_filtered1 = [i for i in range(1,np.shape(binned_map)[0]) if i not in binsaved_X ]
     list_filtered2 = [i for i in range(1,np.shape(binned_map)[1]) if i not in binsaved_Y ]
     
     
     ## Do the HMM analysis for chr 1
     
+    ## Get the filename
     compfile1 = HiCfile.replace(".RAWobserved","_comp_" + str(num_chr_1)+".txt")
-    compfile1 = compfile1.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    compfile1 = os.path.join(save_path,compfile1)
     
+    ## Apply Gaussian HMM
     remodel = hmm.GaussianHMM(n_components=2, covariance_type="diag", n_iter=1000)
 
     remodel.fit(corr_1)
 
     Z21 = remodel.predict(corr_1)
     list_compartments1 = []
+    
+    ## Create list of compartments depending of positive boolean
     
     if positive_1 :
         for i in range(len(Z21)) :
@@ -768,7 +851,8 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
             if Z21[i] == 1 :
                 list_compartments1.append(0.0)
                 
-  
+    ## Write in a txt file the compartments
+    
     for x in list_filtered1 :
         list_compartments1.insert(x-1,-1.0)
     
@@ -777,10 +861,10 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
             f.write(str(x) + "\n")
             
     
-    ## Do the HMM analysis for chr 2
+    ## Do the HMM analysis for chr 2 : same thing
     
     compfile2 = HiCfile.replace(".RAWobserved","_comp_" + str(num_chr_2)+".txt")
-    compfile2 = compfile2.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    compfile2 = os.path.join(save_path,compfile2)
     
     remodel = hmm.GaussianHMM(n_components=2, covariance_type="diag", n_iter=1000)
 
@@ -814,7 +898,10 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     
     
     
-"""
+
+
+    
+
 
 ### APPLICATION ====================================================================================
 
@@ -830,9 +917,9 @@ if mode == "intra" :
 if mode == "inter" :
 
     resolution = 100000
-    HiC_fic = "chr21_22_100kb.RAWobserved"
-    geneDen_fic_1 = "chr21.hdf5"
-    geneDen_fic_2 = "chr22.hdf5"
+    HiC_fic = "chr15_16_100kb.RAWobserved"
+    geneDen_fic_1 = "chr15.hdf5"
+    geneDen_fic_2 = "chr16.hdf5"
 
     pipeline_inter(resolution,HiC_fic,geneDen_fic_1,geneDen_fic_2)
 
