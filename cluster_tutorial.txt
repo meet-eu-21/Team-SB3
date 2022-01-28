@@ -3,7 +3,7 @@ TUTORIAL on how to launch our pipeline for interchromosomal and intrachromosomal
 You can get most of the info needed in https://ifb-elixirfr.gitlab.io/cluster/doc/
 ----------------------------------
 
-PART ONE : How to connect to the clusterr 
+PART ONE : How to connect to the cluster 
 
 ---
 
@@ -14,7 +14,7 @@ On Linux or Mac, launch a command screen. Then type the following code :
 
 ssh <username>@core.cluster.france-bioinformatique.fr
 
-replace <username> by you actual user name.
+replace <username> by your actual user name.
 
 Then type your password. If you are granted an account, you are in. Else, see with Elodie Laine
 if she can provide you one.
@@ -44,7 +44,7 @@ PART THREE : Launch our code and get the results on your local device.
 If you want to get intrachromosomal compartments, just type sbatch pipeline_intra.sh
 If you want to get interchromosomal compartments, juste type sbatch pipeline_inter.sh
 
-You job is now in the queue. To see its status, just type squeue -u username.
+Your job is now in the queue. To see its status, just type squeue -u username.
 
 
 
