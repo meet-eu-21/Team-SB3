@@ -10,17 +10,32 @@ import get_files_cluster
 import pandas as pd
 from numpy import genfromtxt
 
-### Get the parent folder of the working directory
+### Get the parent folder of the working directory. Change it if you modify the name of the folders
 path_parent = os.path.dirname(os.getcwd()) 
 path_SB1 = os.path.join(path_parent,"Results_SB1_intra") #location of SB1 intrachromosomal results to convert
 
 
 folder_results = "Results_Intra" 
 path_SB3 = os.path.join(path_parent,folder_results) #location of SB3 intrachromosomal results to convert
+list_chr = os.listdir(os.path.join(path_parent,folder_results,"HUVEC","25kb_resolution_intrachromosomal")) ## All the chromosomes
 
 ###################################################Convert SB1 results to SB3 results##########################################
 
 def SB1toSB3(path):
+    
+    """
+    A pipeline to convert SB1 generated compartments files into SB3 format.  
+    
+    Keyword arguments :
+    path -- the path containing the folder in which there are the files containing SB1 results
+  
+    Returns :
+    
+
+    all the converted SB1 results in SB3 format in the "SB1_converted_SB3" folder
+    
+    """
+    
     filestoconvert = get_files_cluster.getfiles(path,"") #get all the files in the path
     for file in filestoconvert :
         cell_type = file.split("/")[-1].split("_")[0]
@@ -34,26 +49,39 @@ def SB1toSB3(path):
                 grouped = df_file.groupby(df_file.chrname) #to split according to chr name
                 for chr in chr_values :
                     split_df = grouped.get_group(chr)
-                    split_df.comp = split_df.comp.replace([-1.0,0.0],[0.0,-1.0])
-                    if not os.path.exists(os.path.join(path_parent,"SB1_converted_SB3",cell_type,resolution)):
+                    split_df.comp = split_df.comp.replace([-1.0,0.0],[0.0,-1.0]) ## Change the format of filtered and B compartment bins
+                    if not os.path.exists(os.path.join(path_parent,"SB1_converted_SB3",cell_type,resolution)): #Create folder if not exists
                             os.makedirs(os.path.join(path_parent,"SB1_converted_SB3",cell_type,resolution))
                     filename = os.path.join(path_parent,"SB1_converted_SB3",cell_type,resolution,chr + "_" + resolution +  "_comp.txt") 
                     split_df.comp.to_csv(filename,header = False, index = False) #create the files corresponding to our metric
                     
-list_chr = os.listdir(os.path.join(path_parent,folder_results,"HUVEC","25kb_resolution_intrachromosomal"))
 
 ###################################################Convert SB3 results to SB1 results##########################################
 
 def SB3toSB1(path):
+    
+    """
+    A pipeline to convert SB3 generated compartments files into SB1 format.  
+    
+    Keyword arguments :
+    path -- the path containing the folder in which there are the files containing SB1 results
+  
+    Returns :
+    
+
+    all the converted SB3 results in SB1 format in the "SB3_converted_SB1" folder
+    
+    """
+    
     files_results = get_files_cluster.getfiles(path,"comp") #get files inside the path given
 
-    for resolution in ["25kb","100kb"] :
+    for resolution in ["25kb","100kb"] : ## Because those are intrachromosomal results
         
-        for cell_type in os.listdir(os.path.join(path_parent,folder_results)):
+        for cell_type in os.listdir(os.path.join(path_parent,folder_results)): ## adapt if not all cell types are present
             
             list_df = []
             
-            for chr in list_chr :
+            for chr in list_chr : ## List all the chromosomes
                 
                 for file_results in files_results :
                     

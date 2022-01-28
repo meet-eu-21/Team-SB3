@@ -32,6 +32,8 @@ At the bottom end of the script, you'll find several variables to caliber before
 -   One or two string variables depending of the chosen mode. The intrachromosomal mode has the geneDen_fic variable which is the name of the Gene Density file associated to your sole studied chromosome. The interchromosomal mode has the geneDen_fic_1 and geneDen_fic_2 variables which are the names of the Gene Density files associated to your two studied chromosome. IMPORTANT : The Gene Density files have to be given in the same order than the chromosomes are arranged in the HiC data file name.
 Once you have calibrated those variables, you can run the code which will execute the corresponding pipeline on the given files at the given resolution.
 
+We gave you exemple files on chromosome 16 and 15-16 to do tests.
+
 
 ### Interchromosomal study :
 What follows is a description of the interchromosomal study procedure. Unless noted as such (and thereby explained), all steps of the procedure are the same as in the intrachromosomal study : 
@@ -74,7 +76,7 @@ The commenting gives you a more general insight on the code if you are more inte
 - Make sure you downloaded the folder [Gold standards](Gold_standards/) and the one that you want to test (either [Results_intra](Results_intra/) or [Results_inter](Results_inter)
 
 - Just load the file with your favourite IDE and then type in the console :
-  - `get_results_intra("folder_results")` if you want to generate intrachromosomal silmilarity matrices
+  - `get_results_intra("folder_results")` if you want to generate intrachromosomal similarity matrices
   - `get_results_inter("Results_inter")` if you want to generate interchromosomal similarity matrices
 
 Each time you launch the code it will generate similarity matrices representing for each cell type the percentage of matching rows with Leopold Carron' in [Gold standards](Gold_standards/).
@@ -86,6 +88,21 @@ Each time you launch the code it will generate similarity matrices representing 
 
 
 ## Collaborative work with team SB1 (Sorbonne University) : 
+
+Comparison of intrachromosomal compartments results. We use the code provided in Compartments evaluation to gold standards to compare the results from SB1 team's and our results with the gold standard. Before that we had to change the format of SB1 team's matrices to get the same format as ours.
+SB1 team's format uses the value -1 for inactivated, 0 for filtered and 1 for activated compared to our set of values that is -1 for filtered, 0 for activated and 1 for inactivated. You can find the detailled code in Code/convert_results.py file.
+
+For the comparison we set a table, in abscissa the chromosome of interest and his score compared to gold standard and when the chromosome is associated with the other in ordinate. This table is used with our results and SB1 team's results, and we compare which team is the closest to the gold standard.
+Now we can get into the differences between our 2 groups.
+We choose to focus on two cell types and their 23 chromosomes: HMEC and GM12878 at 2 different resolution 25kb and 100kb.
+
+### How to launch the code :
+
+- Make sure you downloaded folders [Results_SB1_intra](Results_SB1_intra) if you want to convert SB1 results and [Results_intra](Results_intra) if you want to convert our results
+- Load [convert_results](Code/convert_results.py) with your favorite IDE and type :
+  - `SB1toSB3(path_SB1)` to convert SB1 results
+  - `SB3toSB1(path_SB3)` to convert SB3 results
+  
 
 ## Launching our code on the IFB cluster : 
 

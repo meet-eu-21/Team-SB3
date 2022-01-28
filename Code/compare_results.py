@@ -24,6 +24,21 @@ folder_results = "Results_Intra"
 SB1_results = "SB1_converted_SB3"
 
 def get_results_intra(result_folder):
+    
+    """
+    A pipeline to compare intrachromosomal generated results to Leopold's gold standards.
+    
+    Keyword arguments :
+    result folder -- the path containing the folder in which there are the files containing all the intrachromosomal compartments files
+  
+    Returns :
+    
+
+    None
+    
+    Create two csv files for each resolution giving for each chromosome and cell type the similarity with gold standard
+    
+    """
 
     #Get all the files in the results folder and the gold standard folder
 
@@ -102,6 +117,22 @@ def get_results_intra(result_folder):
             
 
 def get_results_inter(folder):  
+    
+    """
+    A pipeline to compare interchromosomal generated results to Leopold's gold standards.
+    
+    Keyword arguments :
+    folder -- the path containing the folder in which there are the files containing all the interchromosomal compartments files
+  
+    Returns :
+    
+
+    None
+    
+    Create 5 csv files for each cell type giving for each pair of chromosome the similarity with gold standard for chromosome in x axis (lines)
+    
+    """
+    
     #Get all the files in the results folder and the gold standard folder
 
     files_gold_standard = get_files_cluster.getfiles(os.path.join(path_parent,folder_gold_standards),"comp")
