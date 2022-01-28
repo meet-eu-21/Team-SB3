@@ -42,6 +42,6 @@ for (filetocomp,resolution,gdfile) in zip(list_files_intra,list_resolutions,list
     print(filetocomp)
     print(resolution)
     print(gdfile)
-    Compartments_SB3_cluster.pipeline(resolution,filetocomp,gdfile)
+    Compartments_SB3_cluster.pipeline_intra(resolution,filetocomp,gdfile)
     
 

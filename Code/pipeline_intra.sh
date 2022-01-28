@@ -8,5 +8,5 @@
 #SBATCH --mail-user=adrienpauron@gmail.com
 module load hmmlearn
 module load python
-python multi_pipeline.py
+python pipeline_intra.py
 

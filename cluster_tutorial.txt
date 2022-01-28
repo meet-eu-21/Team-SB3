@@ -1,0 +1,73 @@
+TUTORIAL on how to launch our pipeline for interchromosomal and intrachromosomal compartments detection.
+
+You can get most of the info needed in https://ifb-elixirfr.gitlab.io/cluster/doc/
+----------------------------------
+
+PART ONE : How to connect to the clusterr 
+
+---
+
+If you are on Windows, please install PuTTy to connect with SSH to the cluster. Configure it 
+with port 22. (more on https://ifb-elixirfr.gitlab.io/cluster/doc/logging-in/).
+
+On Linux or Mac, launch a command screen. Then type the following code :
+
+ssh <username>@core.cluster.france-bioinformatique.fr
+
+replace <username> by you actual user name.
+
+Then type your password. If you are granted an account, you are in. Else, see with Elodie Laine
+if she can provide you one.
+
+-------------------------------------------
+
+PART TWO : How to navigate in the cluster
+
+---
+
+By default, you are on the path /shared/home, on your own folder.
+
+Clone the git repository :
+
+git clone https://github.com/meet-eu-21/Team-SB3/
+
+Type in your username and password. All the repo files should download. 
+
+Now access Code folder by typing :
+
+cd Team-SB3/Code/
+
+-----------------------------------------
+
+PART THREE : Launch our code and get the results on your local device.
+
+If you want to get intrachromosomal compartments, just type sbatch pipeline_intra.sh
+If you want to get interchromosomal compartments, juste type sbatch pipeline_inter.sh
+
+You job is now in the queue. To see its status, just type squeue -u username.
+
+
+
+ 
+To make it accessible for everyone of the team members, file are saved in the /shared/projects/form_2021_21/SB3/ path.
+
+To go there, just type :
+
+
+cd /shared/projects/form_2021_21/SB3/
+
+
+To get the files, I highly recommend you to download Filezilla. On Linux and Mac, it is pretty simple, juste type sudo apt-get install filezilla. Other options are available here: https://doc.ubuntu-fr.org/filezilla
+
+On Windows, download FileZilla software adapted to your Windows version. 
+
+Then launch the software, and connect via SSH with the same login and password as for command line connecting. 
+
+You are now in the cluster, but a more handy graphical interface is helping you !!!!
+
+Now select the file you want and drag and drop it to your local machine
+
+
+If you do not want to download FileZilla, it is made possible to download files with command line. Choices are given in https://ifb-elixirfr.gitlab.io/cluster/doc/quick-start/ in the Transfer chapter.
+
+

@@ -31,6 +31,6 @@ for file in a :
 for (filetocomp,gdfile) in zip(list_files_inter,list_genes_density_files) :
     print(filetocomp)
     print(gdfile)
-    Compartments_SB3_v_Val2.pipeline_inter(100000,filetocomp,gdfile[0],gdfile[1])
+    Compartments_SB3_cluster.pipeline_inter(100000,filetocomp,gdfile[0],gdfile[1])
     
 
