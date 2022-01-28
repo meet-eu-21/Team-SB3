@@ -1,6 +1,6 @@
 # Team-SB3
 
-Welcome to Meet-EU Team SB3 (Sorbonne University) team !
+Hello, nice to MEET-EU. Team SB3 (Sorbonne University) here !
 
 We decided to work on ***topic B : Chromosome compartments !!***
 
