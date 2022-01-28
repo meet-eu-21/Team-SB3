@@ -74,7 +74,7 @@ The commenting gives you a more general insight on the code if you are more inte
 - Make sure you downloaded the folder [Gold standards](Gold_standards/) and the one that you want to test (either [Results_intra](Results_intra/) or [Results_inter](Results_inter)
 
 - Just load the file with your favourite IDE and then type in the console :
-  - `get_results_intra("folder_results")` if you want to generate intrachromosomal silmilarity matrices
+  - `get_results_intra("folder_results")` if you want to generate intrachromosomal similarity matrices
   - `get_results_inter("Results_inter")` if you want to generate interchromosomal similarity matrices
 
 Each time you launch the code it will generate similarity matrices representing for each cell type the percentage of matching rows with Leopold Carron' in [Gold standards](Gold_standards/).
