@@ -94,7 +94,13 @@ For the comparison we set a table, in abscissa the chromosome of interest and hi
 Now we can get into the differences between our 2 groups.
 We choose to focus on two cell types and their 23 chromosomes: HMEC and GM12878 at 2 different resolution 25kb and 100kb.
 
+### How to launch the code :
 
+- Make sure you downloaded folders [Results_SB1_intra](Results_SB1_intra) if you want to convert SB1 results and [Results_intra](Results_intra) if you want to convert our results
+- Load [convert_results](Code/convert_results.py) with your favorite IDE and type :
+  - `SB1toSB3(path_SB1)` to convert SB1 results
+  - `SB3toSB1(path_SB3)` to convert SB3 results
+  - 
 ## Launching our code on the IFB cluster : 
 
 One of the big part of our work was to adapt our code to make it fit to the IFB core cluster (see documentation about it on https://ifb-elixirfr.gitlab.io/cluster/doc/). To make it short, this cluster is a huge computer with thousands of core and ~~unlimited~~ huge calculus power. It is very useful to launch very complex bioinformatics calculus or shorten time needed by your personal desktop computer to finish your pipeline. We used it to get for each cell-type and chromosome its compartments, 3D structure (pdb file) and SCN, O/E, correlation matrices. Our main results are there, so I beg you to check on them.
