@@ -488,7 +488,7 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
 #    print(binned_map_scn)
     
     ## Let us see a heatmap corresponding to the SCN binned_map :
-    
+    """
     
     hm_scn = sns.heatmap(
         binned_map_scn, 
@@ -496,11 +496,11 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
         square=False,
         norm = LogNorm()
     )
-    
+    """
     ### Path of my own folder in cluster ##
     
     save_path = "/shared/home/apauron/"
-
+    """
     heatmap = HiCfile.replace(".RAWobserved","_heatmap.png")
     heatmap = heatmap.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
     filename =os.path.basename(heatmap)
@@ -510,7 +510,7 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     fig.savefig(heatmap,dpi = 400)
     
     plt.close()
-    
+    """
     ## Transform the matrix into the OE  matrix.
     
     # --------------------------------------------------------------------------
@@ -532,7 +532,7 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     print("Transformation into OE matrix :",np.shape(oe_mat))
     print("NaN in matrix :",np.isnan(oe_mat).any())
     print("Inf in matrix :",np.isinf(oe_mat).any())
-    
+    """
     hm_oe = sns.heatmap(
         oe_mat, 
         cmap= "coolwarm",
@@ -547,6 +547,7 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     fig.savefig(oe_heatmap,dpi = 400)
     
     plt.close()
+    """
     ## Let us compute the correlation matrix
 
     # --------------------------------------------------------------------------
@@ -562,22 +563,29 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     #fig.savefig(corr_heatmap,dpi = 400)
     #plt.close()
 
-
+    
     corr_1 = np.corrcoef(oe_mat)
     corr_2 = np.corrcoef(oe_mat,rowvar = False)
+    """
     hm_corr_1 = sns.heatmap(corr_1, vmin = -0.1, vmax = 0.1, cmap= "coolwarm",square=False)  
     fig = hm_corr_1.get_figure()
-    corr_heatmap_1 = HiCfile.replace(".RAWobserved","_corr_heatmap_"+str(num_chr_1)+".png")
+    """
+    corr_heatmap_1 = HiCfile.replace(".RAWobserved","_corr_heatmap_"+str(num_chr_1)+".csv")
     corr_heatmap_1 = corr_heatmap_1.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    """
     fig.savefig(corr_heatmap_1,dpi = 400)
     plt.close()
-
+    """
+    """
     hm_corr_2 = sns.heatmap(corr_2, vmin = -0.1, vmax = 0.1, cmap= "coolwarm",square=False)  
     fig = hm_corr_2.get_figure()
-    corr_heatmap_2 = HiCfile.replace(".RAWobserved","_corr_heatmap_"+str(num_chr_2)+".png")
+    """
+    corr_heatmap_2 = HiCfile.replace(".RAWobserved","_corr_heatmap_"+str(num_chr_2)+".csv")
     corr_heatmap_2 = corr_heatmap_2.replace("/shared/projects/form_2021_21/trainers/dataforstudent/HiC/",save_path)
+    """
     fig.savefig(corr_heatmap_2,dpi = 400)
     plt.close()
+    """
     # --------------------------------------------------------------------------
 
     print("Computation of Correlation Matrices :",np.shape(corr_1),'/',np.shape(corr_2))
@@ -589,7 +597,9 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     if np.isnan(corr_2).any() :
         corr_2[np.isnan(corr_2)] = 0
     print("Inf in matrix 2 :",np.isinf(corr_2).any())
-    
+    np.savetxt(corr_heatmap_1,corr_1)
+    np.savetxt(corr_heatmap_2,corr_2)
+    """
     ## Get the svd decomposition
 
     # --------------------------------------------------------------------------
@@ -607,7 +617,7 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     eigenvectors_2 = np.transpose(eigenvectors_2)
     s_vector_2 = eigenvectors_2[0]
     # --------------------------------------------------------------------------
-
+    
     print("Computation of eigenvectors :",len(s_vector_1),'/',len(s_vector_2))
 
     ## Gene Density data treatment
@@ -804,7 +814,7 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     
     
     
-
+"""
 
 ### APPLICATION ====================================================================================
 
@@ -820,9 +830,9 @@ if mode == "intra" :
 if mode == "inter" :
 
     resolution = 100000
-    HiC_fic = "chr1_5_100kb.RAWobserved"
-    geneDen_fic_1 = "chr1.hdf5"
-    geneDen_fic_2 = "chr5.hdf5"
+    HiC_fic = "chr21_22_100kb.RAWobserved"
+    geneDen_fic_1 = "chr21.hdf5"
+    geneDen_fic_2 = "chr22.hdf5"
 
     pipeline_inter(resolution,HiC_fic,geneDen_fic_1,geneDen_fic_2)
 

@@ -23,6 +23,7 @@ path_SB3 = os.path.join(path_parent,folder_results) #location of SB3 intrachromo
 def SB1toSB3(path):
     filestoconvert = get_files_cluster.getfiles(path,"") #get all the files in the path
     for file in filestoconvert :
+        cell_type = file.split("/")[-1].split("_")[0]
         for resolution in ["25kb","100kb"] :
             if resolution in file :
                 df_file = pd.read_csv(file,sep = ' ',header = None) #get the SB1 file
@@ -33,10 +34,10 @@ def SB1toSB3(path):
                 grouped = df_file.groupby(df_file.chrname) #to split according to chr name
                 for chr in chr_values :
                     split_df = grouped.get_group(chr)
-                    newsplit = split_df.copy()
-                    newsplit.comp[split_df.comp == 0.0] = -1.0 #Convert the comp because we have not the same metrics
-                    newsplit.comp[split_df.comp == -1.0] = 0.0 #same
-                    filename = os.path.join(path_parent,"SB1_converted_SB3",chr + "_" + resolution + "_comp.txt") 
+                    split_df.comp = split_df.comp.replace([-1.0,0.0],[0.0,-1.0])
+                    if not os.path.exists(os.path.join(path_parent,"SB1_converted_SB3",cell_type,resolution)):
+                            os.makedirs(os.path.join(path_parent,"SB1_converted_SB3",cell_type,resolution))
+                    filename = os.path.join(path_parent,"SB1_converted_SB3",cell_type,resolution,chr + "_" + resolution +  "_comp.txt") 
                     split_df.comp.to_csv(filename,header = False, index = False) #create the files corresponding to our metric
                     
 list_chr = os.listdir(os.path.join(path_parent,folder_results,"HUVEC","25kb_resolution_intrachromosomal"))
