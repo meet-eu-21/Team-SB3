@@ -4,7 +4,7 @@ Hello, nice to MEET-EU. Team SB3 (Sorbonne University) here !
 
 We decided to work on ***topic B : Chromosome compartments !!***
 
-The aim of our group is to tackle chromosome compartments, first by seing what compartments can be identified within a chromosom and then between chromosoms.
+The aim of our group is to tackle chromosome compartments, first by seeing what compartments can be identified within a chromosom and then between chromosoms.
 
 
 Most of the pipeline is taken from Leopold Carron in files [HiCToolBox](Code/HiCtoolBox.py) and [main](Code/main.py) 
