@@ -7,7 +7,7 @@ We decided to work on ***topic B : Chromosome compartments !!***
 The aim of our group is to tackle chromosome compartments, first by seeing what compartments can be identified within a chromosom and then between chromosoms.
 
 
-Most of the pipeline is taken from Leopold Carron in files [HiCToolBox](Code/HiCtoolBox.py) and [main](Code/main.py) 
+Most of the pipeline is taken from Leopold Carron in files [HiCToolBox](Code/HiCtoolbox.py) and [main](Code/main.py) 
 
 
 All the HiC data, compartment gold standards and gene density files are taken from this repository : http://www.lcqb.upmc.fr/meetu/dataforstudent/
