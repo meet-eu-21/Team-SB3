@@ -100,7 +100,8 @@ We choose to focus on two cell types and their 23 chromosomes: HMEC and GM12878 
 - Load [convert_results](Code/convert_results.py) with your favorite IDE and type :
   - `SB1toSB3(path_SB1)` to convert SB1 results
   - `SB3toSB1(path_SB3)` to convert SB3 results
-  - 
+  
+
 ## Launching our code on the IFB cluster : 
 
 One of the big part of our work was to adapt our code to make it fit to the IFB core cluster (see documentation about it on https://ifb-elixirfr.gitlab.io/cluster/doc/). To make it short, this cluster is a huge computer with thousands of core and ~~unlimited~~ huge calculus power. It is very useful to launch very complex bioinformatics calculus or shorten time needed by your personal desktop computer to finish your pipeline. We used it to get for each cell-type and chromosome its compartments, 3D structure (pdb file) and SCN, O/E, correlation matrices. Our main results are there, so I beg you to check on them.
