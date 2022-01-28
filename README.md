@@ -32,6 +32,8 @@ At the bottom end of the script, you'll find several variables to caliber before
 -   One or two string variables depending of the chosen mode. The intrachromosomal mode has the geneDen_fic variable which is the name of the Gene Density file associated to your sole studied chromosome. The interchromosomal mode has the geneDen_fic_1 and geneDen_fic_2 variables which are the names of the Gene Density files associated to your two studied chromosome. IMPORTANT : The Gene Density files have to be given in the same order than the chromosomes are arranged in the HiC data file name.
 Once you have calibrated those variables, you can run the code which will execute the corresponding pipeline on the given files at the given resolution.
 
+We gave you exemple files on chromosome 16 and 15-16 to do tests.
+
 
 ### Interchromosomal study :
 What follows is a description of the interchromosomal study procedure. Unless noted as such (and thereby explained), all steps of the procedure are the same as in the intrachromosomal study : 
