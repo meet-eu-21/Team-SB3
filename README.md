@@ -18,7 +18,7 @@ We are proud to present you our [report](Report_SB3_2022.pdf) and [digest](Diges
 
 This present tutorial aims at helping you use our code. It covers all the steps we describe in our report, from reading Hi-C matrix to evaluation of precision compared to ~~Leopold Carron~~ gold standards.
 
-## HiC contact )maps reading and compartment generation
+## HiC contact maps reading and compartment generation
 
 This covers how to use [Compartments_SB3_v2.py](Code/Compartments_SB3_v2.py) that you can find in the main branch
 
