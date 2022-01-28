@@ -560,7 +560,7 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     
     ### Path of our results folder ##
     
-    save_path = os.path.joint(os.getcwd(),"Results_local")
+    save_path = os.path.join(os.getcwd(),"Results_local")
         
     ## Prepare file name of SCN matrix and save it
     heatmap = HiCfile.replace(".RAWobserved","_heatmap.png")
@@ -633,7 +633,7 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     hm_corr_1 = sns.heatmap(corr_1, vmin = -0.1, vmax = 0.1, cmap= "coolwarm",square=False)  
     fig = hm_corr_1.get_figure()
     
-    corr_heatmap_1 = HiCfile.replace(".RAWobserved","_corr_heatmap_"+str(num_chr_1)+".csv")
+    corr_heatmap_1 = HiCfile.replace(".RAWobserved","_corr_heatmap_"+str(num_chr_1)+".png")
     corr_heatmap_1 = os.path.join(save_path,corr_heatmap_1)
     
     fig.savefig(corr_heatmap_1,dpi = 400)
@@ -643,7 +643,7 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
     hm_corr_2 = sns.heatmap(corr_2, vmin = -0.1, vmax = 0.1, cmap= "coolwarm",square=False)  
     fig = hm_corr_2.get_figure()
     
-    corr_heatmap_2 = HiCfile.replace(".RAWobserved","_corr_heatmap_"+str(num_chr_2)+".csv")
+    corr_heatmap_2 = HiCfile.replace(".RAWobserved","_corr_heatmap_"+str(num_chr_2)+".png")
     corr_heatmap_1 = os.path.join(save_path,corr_heatmap_2)
     
     fig.savefig(corr_heatmap_2,dpi = 400)
@@ -905,12 +905,12 @@ def pipeline_inter(R,HiCfile,gene_density_file_1,gene_density_file_2) :
 
 ### APPLICATION ====================================================================================
 
-mode = "inter"
+mode = "intra"
 
 if mode == "intra" :
     resolution = 100000
-    HiC_fic = "chr16_100kb.RAWobserved"
-    geneDen_fic = "chr16.hdf5"
+    HiC_fic = "chr15_100kb.RAWobserved"
+    geneDen_fic = "chr15.hdf5"
 
     pipeline_intra(resolution,HiC_fic,geneDen_fic)
 

@@ -78,50 +78,51 @@ def SB3toSB1(path):
     for resolution in ["25kb","100kb"] : ## Because those are intrachromosomal results
         
         for cell_type in os.listdir(os.path.join(path_parent,folder_results)): ## adapt if not all cell types are present
-            
-            list_df = []
-            
-            for chr in list_chr : ## List all the chromosomes
+            if os.path.isdir(os.path.join(path_parent,folder_results,cell_type)):
+   
+                list_df = []
                 
-                for file_results in files_results :
+                for chr in list_chr : ## List all the chromosomes
                     
-                    # find the good corresponding file to chr,cell_type and results
-                    if chr in file_results and cell_type in file_results and resolution in file_results : 
+                    for file_results in files_results :
                         
-                        file_df = pd.DataFrame()
-                        
-                        # Transformation into a SB1 type file : chr x start end comp
-                        
-                        lresults = genfromtxt(file_results, delimiter='\n') 
-                        file_df["comp"] = lresults 
-                        file_df["chromosome"] = ["chr" for i in range(len(lresults))]
-                        file_df["chrnum"] = [chr.replace("chr","") for i in range(len(lresults))]
-                        
-                        #According to resolution, create the start and end bins
-                        
-                        if resolution == "100kb" :
-                            file_df["start"] = [100000.0*x for x in file_df.index.tolist()]
-                        else :
-                            file_df["start"] = [25000.0*x for x in file_df.index.tolist()]
-                        if resolution == "100kb" :
-                            file_df["end"] = [100000.0*(x+1) for x in file_df.index.tolist()]
-                        else :
-                            file_df["end"] = [25000.0*(x+1) for x in file_df.index.tolist()]
-                        
-                        #Append to a list the dataframe corresponding to the chromosome
-                        
-                        file_df_copy = file_df.copy()
-                        file_df_copy = file_df_copy[["chromosome","chrnum","start","end","comp"]]
-                        file_df_copy.comp[file_df.comp == 0.0] = -1.0
-                        file_df_copy.comp[file_df.comp == -1.0] = 0.0
-                        list_df.append(file_df_copy)
+                        # find the good corresponding file to chr,cell_type and results
+                        if chr in file_results and cell_type in file_results and resolution in file_results : 
+                            
+                            file_df = pd.DataFrame()
+                            
+                            # Transformation into a SB1 type file : chr x start end comp
+                            
+                            lresults = genfromtxt(file_results, delimiter='\n') 
+                            file_df["comp"] = lresults 
+                            file_df["chromosome"] = ["chr" for i in range(len(lresults))]
+                            file_df["chrnum"] = [chr.replace("chr","") for i in range(len(lresults))]
+                            
+                            #According to resolution, create the start and end bins
+                            
+                            if resolution == "100kb" :
+                                file_df["start"] = [100000.0*x for x in file_df.index.tolist()]
+                            else :
+                                file_df["start"] = [25000.0*x for x in file_df.index.tolist()]
+                            if resolution == "100kb" :
+                                file_df["end"] = [100000.0*(x+1) for x in file_df.index.tolist()]
+                            else :
+                                file_df["end"] = [25000.0*(x+1) for x in file_df.index.tolist()]
+                            
+                            #Append to a list the dataframe corresponding to the chromosome
+                            
+                            file_df_copy = file_df.copy()
+                            file_df_copy = file_df_copy[["chromosome","chrnum","start","end","comp"]]
+                            file_df_copy.comp[file_df.comp == 0.0] = -1.0
+                            file_df_copy.comp[file_df.comp == -1.0] = 0.0
+                            list_df.append(file_df_copy)
                
-            #Concatenate all the dataframes with chromosomes of the same cell type
-            
-            res_df = pd.concat(list_df)
-            res_df = res_df.sort_values(by = ["chrnum","start"])
-            filename = os.path.join(path_parent,"SB3_converted_SB1",cell_type + "_" + resolution + "_COMPARTMENT" )
-            res_df.to_csv(filename,header = False, index = False, sep = " ")
+                #Concatenate all the dataframes with chromosomes of the same cell type
+                
+                res_df = pd.concat(list_df)
+                res_df = res_df.sort_values(by = ["chrnum","start"])
+                filename = os.path.join(path_parent,"SB3_converted_SB1",cell_type + "_" + resolution + "_COMPARTMENT" )
+                res_df.to_csv(filename,header = False, index = False, sep = " ")
                         
 
 
