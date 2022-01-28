@@ -87,6 +87,14 @@ Each time you launch the code it will generate similarity matrices representing 
 
 ## Collaborative work with team SB1 (Sorbonne University) : 
 
+Comparaison of intrachromosomal compartments results. We use the code provided in Compartments evaluation to gold standards to compare the results from Sb1 team's and our results compared to gold standard. Before that we had to change the format of SB1 team's matrix to have the same format as our.
+SB1 team's format use the value -1 for inactivated, 0 for filtered and 1 for activated compared to our set of values that is -1 for filtered, 0 for actiated and 1 for inactivated. You can find the detailled code in Code/convert_results.py file.
+
+For the comapraison we set a table, in abscissa the chromosom of interest and his score compared to gold standard and when the chromosom is associasted with the other in ordinate. This table is used with our results and SB1 team's results, and we compared which team are the closest to the gold standard.
+Now we can get into the difference between our 2 groups.
+We choose to focus on 2 cells types and their 23 chromosomes: HMEC and GM12878 at 2 differents resolution 25kb and 100kb.
+
+
 ## Launching our code on the IFB cluster : 
 
 One of the big part of our work was to adapt our code to make it fit to the IFB core cluster (see documentation about it on https://ifb-elixirfr.gitlab.io/cluster/doc/). To make it short, this cluster is a huge computer with thousands of core and ~~unlimited~~ huge calculus power. It is very useful to launch very complex bioinformatics calculus or shorten time needed by your personal desktop computer to finish your pipeline. We used it to get for each cell-type and chromosome its compartments, 3D structure (pdb file) and SCN, O/E, correlation matrices. Our main results are there, so I beg you to check on them.
