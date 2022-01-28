@@ -87,12 +87,12 @@ Each time you launch the code it will generate similarity matrices representing 
 
 ## Collaborative work with team SB1 (Sorbonne University) : 
 
-Comparaison of intrachromosomal compartments results. We use the code provided in Compartments evaluation to gold standards to compare the results from Sb1 team's and our results compared to gold standard. Before that we had to change the format of SB1 team's matrix to have the same format as our.
-SB1 team's format use the value -1 for inactivated, 0 for filtered and 1 for activated compared to our set of values that is -1 for filtered, 0 for actiated and 1 for inactivated. You can find the detailled code in Code/convert_results.py file.
+Comparison of intrachromosomal compartments results. We use the code provided in Compartments evaluation to gold standards to compare the results from SB1 team's and our results with the gold standard. Before that we had to change the format of SB1 team's matrix to have the same format as our.
+SB1 team's format uses the value -1 for inactivated, 0 for filtered and 1 for activated compared to our set of values that is -1 for filtered, 0 for activated and 1 for inactivated. You can find the detailled code in Code/convert_results.py file.
 
-For the comapraison we set a table, in abscissa the chromosom of interest and his score compared to gold standard and when the chromosom is associasted with the other in ordinate. This table is used with our results and SB1 team's results, and we compared which team are the closest to the gold standard.
+For the comapraison we set a table, in abscissa the chromosom of interest and his score compared to gold standard and when the chromosom is associated with the other in ordinate. This table is used with our results and SB1 team's results, and we compared which team is the closest to the gold standard.
 Now we can get into the difference between our 2 groups.
-We choose to focus on 2 cells types and their 23 chromosomes: HMEC and GM12878 at 2 differents resolution 25kb and 100kb.
+We choose to focus on two cell types and their 23 chromosomes: HMEC and GM12878 at 2 different resolution 25kb and 100kb.
 
 
 ## Launching our code on the IFB cluster : 
