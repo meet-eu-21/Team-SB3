@@ -65,11 +65,24 @@ This part covers how to use [compare results](Code/compare_results.py) to conver
 
 ### The general structure of the script :
 
-It is composed of two main methods, one for intrachromosomal and the other for interchromosomal comparision with gold standards.
+It is composed of two main methods, one for intrachromosomal compartments and the other for interchromosomal compartments comparison with gold standards.
+The commenting gives you a more general insight on the code if you are more interested in it. 
 
 ### How to launch the code :
 
-Just load the file with your favourite IDE and then type :
+
+- Make sure you downloaded the folder [Gold standards](Gold_standards/) and the one that you want to test (either [Results_intra](Results_intra/) or [Results_inter](Results_inter)
+
+- Just load the file with your favourite IDE and then type in the console :
+  - `get_results_intra("folder_results")` if you want to generate intrachromosomal silmilarity matrices
+  - `get_results_inter("Results_inter")` if you want to generate interchromosomal similarity matrices
+
+Each time you launch the code it will generate similarity matrices representing for each cell type the percentage of matching rows with Leopold Carron' in [Gold standards](Gold_standards/).
+
+  - For intrachromosomal, two csv files are created, one for each resolution, with all the cell-types in the same dataframe.
+  - For interchromosomal, since only 100kb resolution exists, we created a file per cell-type, each containing a 2D matrix revealing the matching percentage for chromosome in x-axis when associated with chromosome with y-axis. Diagonal is -9999 because it is not computed by the method but is the intrachromosomal score in reality. 
+
+
 
 
 ## Collaborative work with team SB1 (Sorbonne University) : 
@@ -78,4 +91,12 @@ Just load the file with your favourite IDE and then type :
 
 ## License
 
-This code is distributed under the MIT license. See [LICENSE][LICENSE.txt] for more information.
+This work was provided to you by :
+
+- Jeanne BAUDUIN   Jeanne.Bauduin@etu.sorbonne-universite.fr
+- Corentin DELHAY  corentin.delhay@etu.upmc.fr
+- Valentin GHERDOL valentin.gherdol-nouvion@etu.sorbonne-universite.fr 
+- Julien KOT       julien.kot@etu.upmc.fr
+- Adrien PAURON    Adrien.Pauron@etu.sorbonne-universite.fr
+
+This code is distributed under the MIT license. See [LICENSE](LICENSE.txt) for more information.
