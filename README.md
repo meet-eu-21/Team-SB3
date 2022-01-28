@@ -108,7 +108,7 @@ We choose to focus on two cell types and their 23 chromosomes: HMEC and GM12878 
 
 ## Launching our code on the IFB cluster : 
 
-One of the big part of our work was to adapt our code to make it fit to the IFB core cluster (see documentation about it on https://ifb-elixirfr.gitlab.io/cluster/doc/). To make it short, this cluster is a huge computer with thousands of core and ~~unlimited~~ huge calculus power. It is very useful to launch very complex bioinformatics calculus or shorten time needed by your personal desktop computer to finish your pipeline. We used it to get for each cell-type and chromosome its compartments, 3D structure (pdb file) and SCN, O/E, correlation matrices. Our main results are there, so I beg you to check on them.
+One of the big part of our work was to adapt our code to make it fit to the IFB core cluster (see documentation about it on https://ifb-elixirfr.gitlab.io/cluster/doc/). To make it short, this cluster is a huge computer with thousands of core and ~~unlimited~~ huge calculus power. It is very useful to launch very complex bioinformatics calculus or shorten time needed by your personal desktop computer to finish your pipeline. We used it to get for each cell-type and chromosome its compartments, 3D structure (pdb file) and SCN, O/E, correlation matrices. Our main results are there, so we beg you to check on them.
 
 The [cluster_tutorial](cluster_tutorial.txt) is a specially made tutorial to help you get in the cluster and download our results. Please read it to get more information about how to run our cluster-tailored twin [Compartment_SB3_cluster](Code/Compartment_SB3_cluster.py) and the two pipelines [intra](Code/pipeline_intra.sh) and [inter](Code/pipeline_inter.sh).
 
